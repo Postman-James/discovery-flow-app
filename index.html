@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SE Discovery Flow - Platform Engineering</title>
+<title>SE Discovery Flow</title>
 <style>
   :root {
     --pm-orange: #FF6C37;
@@ -21,508 +21,137 @@
     --text: #333333;
     --text-light: #666666;
   }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: var(--pm-light);
-    color: var(--text);
-    line-height: 1.6;
-  }
-
-  .header {
-    background: var(--pm-dark);
-    color: white;
-    padding: 16px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  }
-
-  .header h1 {
-    font-size: 18px;
-    font-weight: 600;
-  }
-
-  .header-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .timer {
-    font-size: 14px;
-    font-family: 'SF Mono', 'Fira Code', monospace;
-    background: var(--pm-gray);
-    padding: 6px 12px;
-    border-radius: 6px;
-    min-width: 60px;
-    text-align: center;
-  }
-
-  .timer.warning { color: var(--pm-yellow); }
-  .timer.danger { color: var(--pm-red); }
-
-  .btn {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 600;
-    transition: all 0.2s;
-  }
-
-  .btn-orange {
-    background: var(--pm-orange);
-    color: white;
-  }
-  .btn-orange:hover { background: var(--pm-orange-dark); }
-
-  .btn-outline {
-    background: transparent;
-    color: white;
-    border: 1px solid rgba(255,255,255,0.3);
-  }
-  .btn-outline:hover { border-color: white; }
-
-  .btn-small {
-    padding: 4px 10px;
-    font-size: 12px;
-  }
-
-  .progress-bar {
-    background: var(--pm-gray);
-    height: 4px;
-    position: sticky;
-    top: 56px;
-    z-index: 99;
-  }
-
-  .progress-fill {
-    height: 100%;
-    background: var(--pm-orange);
-    transition: width 0.4s ease;
-    border-radius: 0 2px 2px 0;
-  }
-
-  .container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 24px;
-  }
-
-  .phase-nav {
-    display: flex;
-    gap: 4px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-  }
-
-  .phase-tab {
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    border: 2px solid var(--border);
-    background: white;
-    color: var(--text-light);
-    transition: all 0.2s;
-    white-space: nowrap;
-  }
-
-  .phase-tab.active {
-    background: var(--pm-orange);
-    color: white;
-    border-color: var(--pm-orange);
-  }
-
-  .phase-tab.completed {
-    background: var(--pm-green);
-    color: white;
-    border-color: var(--pm-green);
-  }
-
-  .phase-tab .time-hint {
-    font-weight: 400;
-    opacity: 0.8;
-    font-size: 11px;
-  }
-
-  .phase {
-    display: none;
-  }
-
-  .phase.active {
-    display: block;
-  }
-
-  .card {
-    background: var(--card-bg);
-    border-radius: 12px;
-    padding: 24px;
-    margin-bottom: 16px;
-    border: 1px solid var(--border);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-  }
-
-  .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 16px;
-  }
-
-  .card h2 {
-    font-size: 18px;
-    color: var(--pm-dark);
-  }
-
-  .card h3 {
-    font-size: 15px;
-    color: var(--pm-dark);
-    margin-bottom: 8px;
-  }
-
-  .badge {
-    padding: 3px 10px;
-    border-radius: 12px;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    white-space: nowrap;
-  }
-
-  .badge-chaos { background: #FFF3E0; color: #E65100; }
-  .badge-question { background: #E3F2FD; color: #1565C0; }
-  .badge-signal { background: #E8F5E9; color: #2E7D32; }
-  .badge-objection { background: #FCE4EC; color: #C62828; }
-
-  .talk-track {
-    background: #F8F9FA;
-    border-left: 3px solid var(--pm-orange);
-    padding: 12px 16px;
-    margin: 12px 0;
-    border-radius: 0 8px 8px 0;
-    font-style: italic;
-    color: var(--text);
-    font-size: 14px;
-    cursor: pointer;
-    position: relative;
-  }
-
-  .talk-track:hover {
-    background: #F0F1F3;
-  }
-
-  .talk-track .copy-hint {
-    position: absolute;
-    right: 8px;
-    top: 8px;
-    font-size: 10px;
-    color: var(--text-light);
-    font-style: normal;
-    opacity: 0;
-    transition: opacity 0.2s;
-  }
-
-  .talk-track:hover .copy-hint { opacity: 1; }
-
-  .follow-ups {
-    margin: 12px 0;
-    padding-left: 0;
-    list-style: none;
-  }
-
-  .follow-ups li {
-    padding: 8px 12px;
-    margin: 4px 0;
-    background: #FAFAFA;
-    border-radius: 6px;
-    font-size: 14px;
-    border: 1px solid transparent;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .follow-ups li:hover {
-    border-color: var(--pm-orange);
-    background: #FFF8F5;
-  }
-
-  .follow-ups li.asked {
-    border-color: var(--pm-green);
-    background: #F0FFF4;
-    opacity: 0.7;
-  }
-
-  .follow-ups li.asked::after {
-    content: ' (asked)';
-    font-size: 11px;
-    color: var(--pm-green);
-    font-weight: 600;
-  }
-
-  .signals-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin: 12px 0;
-  }
-
-  .signal {
-    padding: 10px 14px;
-    border-radius: 8px;
-    font-size: 13px;
-    cursor: pointer;
-    transition: all 0.2s;
-    border: 2px solid transparent;
-  }
-
-  .signal-good {
-    background: #F0FFF4;
-    color: #2E7D32;
-  }
-
-  .signal-good.selected {
-    border-color: var(--pm-green);
-    background: #C8E6C9;
-    font-weight: 600;
-  }
-
-  .signal-bad {
-    background: #FFF3E0;
-    color: #E65100;
-  }
-
-  .signal-bad.selected {
-    border-color: var(--pm-red);
-    background: #FFCCBC;
-    font-weight: 600;
-  }
-
-  .chaos-selector {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin: 16px 0;
-  }
-
-  .chaos-card {
-    padding: 16px;
-    border-radius: 10px;
-    border: 2px solid var(--border);
-    cursor: pointer;
-    transition: all 0.2s;
-    background: white;
-  }
-
-  .chaos-card:hover { border-color: var(--pm-orange); }
-
-  .chaos-card.selected {
-    border-color: var(--pm-orange);
-    background: #FFF8F5;
-    box-shadow: 0 0 0 3px rgba(255,108,55,0.15);
-  }
-
-  .chaos-card h4 {
-    font-size: 14px;
-    margin-bottom: 4px;
-    color: var(--pm-dark);
-  }
-
-  .chaos-card p {
-    font-size: 12px;
-    color: var(--text-light);
-  }
-
-  .chaos-icon {
-    font-size: 24px;
-    margin-bottom: 8px;
-  }
-
-  .notes-area {
-    width: 100%;
-    min-height: 80px;
-    padding: 12px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-family: inherit;
-    font-size: 14px;
-    resize: vertical;
-    margin-top: 8px;
-  }
-
-  .notes-area:focus {
-    outline: none;
-    border-color: var(--pm-orange);
-    box-shadow: 0 0 0 3px rgba(255,108,55,0.1);
-  }
-
-  .objection-card {
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    margin: 8px 0;
-    overflow: hidden;
-  }
-
-  .objection-header {
-    padding: 12px 16px;
-    background: #FAFAFA;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 14px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .objection-header:hover { background: #F0F0F0; }
-
-  .objection-body {
-    padding: 16px;
-    display: none;
-    font-size: 14px;
-  }
-
-  .objection-body.open { display: block; }
-
-  .objection-body .reframe {
-    background: #E8F5E9;
-    padding: 12px;
-    border-radius: 8px;
-    margin-top: 8px;
-  }
-
-  .metric-row {
-    display: grid;
-    grid-template-columns: 120px 1fr 1fr;
-    gap: 8px;
-    margin: 4px 0;
-    align-items: center;
-  }
-
-  .metric-label {
-    font-weight: 600;
-    font-size: 13px;
-    color: var(--pm-dark);
-  }
-
-  .metric-input {
-    padding: 6px 10px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    font-size: 13px;
-    font-family: inherit;
-  }
-
-  .metric-input:focus {
-    outline: none;
-    border-color: var(--pm-orange);
-  }
-
-  .section-divider {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 16px 0;
-  }
-
-  .postman-fit {
-    display: inline-block;
-    background: #FFF3E0;
-    color: var(--pm-orange-dark);
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 600;
-    margin-top: 8px;
-  }
-
-  .summary-section {
-    margin: 12px 0;
-  }
-
-  .summary-section h4 {
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--text-light);
-    margin-bottom: 8px;
-  }
-
-  .summary-item {
-    padding: 6px 0;
-    font-size: 14px;
-    border-bottom: 1px solid #F0F0F0;
-  }
-
-  .hidden { display: none; }
-
-  @media (max-width: 768px) {
-    .chaos-selector { grid-template-columns: 1fr; }
-    .signals-grid { grid-template-columns: 1fr; }
-    .metric-row { grid-template-columns: 1fr; }
-    .phase-nav { gap: 6px; }
-    .phase-tab { font-size: 12px; padding: 6px 12px; }
-  }
-
-  .star-question {
-    background: linear-gradient(135deg, #FFF8F5, #FFF3E0);
-    border: 2px solid var(--pm-orange);
-    padding: 16px;
-    border-radius: 10px;
-    margin: 12px 0;
-  }
-
-  .star-question::before {
-    content: 'STAR QUESTION';
-    display: block;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    color: var(--pm-orange);
-    margin-bottom: 6px;
-  }
-
-  .closing-question {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    padding: 10px;
-    margin: 6px 0;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.15s;
-    border: 1px solid transparent;
-  }
-
-  .closing-question:hover { background: #F8F9FA; }
-
-  .closing-question.asked {
-    background: #F0FFF4;
-    border-color: var(--pm-green);
-  }
-
-  .closing-question input[type="checkbox"] {
-    margin-top: 4px;
-    accent-color: var(--pm-green);
-  }
-
-  .closing-label {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text-light);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    display: block;
-    margin-bottom: 2px;
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--pm-light); color: var(--text); line-height:1.6; }
+
+  /* Header */
+  .header { background: var(--pm-dark); color: white; padding:14px 24px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; box-shadow:0 2px 8px rgba(0,0,0,0.2); }
+  .header h1 { font-size:17px; font-weight:600; }
+  .header-right { display:flex; align-items:center; gap:10px; }
+  .timer { font-size:14px; font-family:'SF Mono','Fira Code',monospace; background:var(--pm-gray); padding:5px 12px; border-radius:6px; min-width:58px; text-align:center; }
+  .timer.warning { color:var(--pm-yellow); }
+  .timer.danger { color:var(--pm-red); }
+  .persona-badge { font-size:12px; background:var(--pm-orange); padding:4px 10px; border-radius:12px; font-weight:600; cursor:pointer; }
+
+  /* Buttons */
+  .btn { padding:8px 16px; border:none; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600; transition:all 0.2s; }
+  .btn-orange { background:var(--pm-orange); color:white; }
+  .btn-orange:hover { background:var(--pm-orange-dark); }
+  .btn-outline { background:transparent; color:white; border:1px solid rgba(255,255,255,0.3); }
+  .btn-outline:hover { border-color:white; }
+  .btn-back { background:transparent; color:var(--text); border:1px solid var(--border); }
+  .btn-back:hover { border-color:var(--text); }
+  .btn-small { padding:4px 10px; font-size:12px; }
+
+  /* Progress */
+  .progress-bar { background:var(--pm-gray); height:4px; position:sticky; top:53px; z-index:99; }
+  .progress-fill { height:100%; background:var(--pm-orange); transition:width 0.4s ease; border-radius:0 2px 2px 0; }
+
+  .container { max-width:920px; margin:0 auto; padding:24px; }
+
+  /* Phase nav */
+  .phase-nav { display:flex; gap:4px; margin-bottom:20px; flex-wrap:wrap; }
+  .phase-tab { padding:7px 14px; border-radius:20px; font-size:12px; font-weight:600; cursor:pointer; border:2px solid var(--border); background:white; color:var(--text-light); transition:all 0.2s; white-space:nowrap; }
+  .phase-tab.active { background:var(--pm-orange); color:white; border-color:var(--pm-orange); }
+  .phase-tab.completed { background:var(--pm-green); color:white; border-color:var(--pm-green); }
+  .phase-tab .time-hint { font-weight:400; opacity:0.8; font-size:10px; }
+
+  .phase { display:none; }
+  .phase.active { display:block; }
+
+  /* Cards */
+  .card { background:var(--card-bg); border-radius:12px; padding:22px; margin-bottom:14px; border:1px solid var(--border); box-shadow:0 1px 3px rgba(0,0,0,0.06); }
+  .card-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; }
+  .card h2 { font-size:17px; color:var(--pm-dark); }
+  .card h3 { font-size:14px; color:var(--pm-dark); margin-bottom:6px; }
+  .badge { padding:3px 10px; border-radius:12px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; white-space:nowrap; }
+  .badge-chaos { background:#FFF3E0; color:#E65100; }
+  .badge-question { background:#E3F2FD; color:#1565C0; }
+  .badge-signal { background:#E8F5E9; color:#2E7D32; }
+  .badge-objection { background:#FCE4EC; color:#C62828; }
+  .badge-persona { background:#EDE7F6; color:#4527A0; }
+
+  /* Talk tracks */
+  .talk-track { background:#F8F9FA; border-left:3px solid var(--pm-orange); padding:10px 14px; margin:10px 0; border-radius:0 8px 8px 0; font-style:italic; font-size:13px; cursor:pointer; position:relative; }
+  .talk-track:hover { background:#F0F1F3; }
+  .talk-track .copy-hint { position:absolute; right:8px; top:6px; font-size:10px; color:var(--text-light); font-style:normal; opacity:0; transition:opacity 0.2s; }
+  .talk-track:hover .copy-hint { opacity:1; }
+
+  /* Follow-ups / questions */
+  .follow-ups { margin:10px 0; padding-left:0; list-style:none; }
+  .follow-ups li { padding:7px 11px; margin:3px 0; background:#FAFAFA; border-radius:6px; font-size:13px; border:1px solid transparent; cursor:pointer; transition:all 0.15s; }
+  .follow-ups li:hover { border-color:var(--pm-orange); background:#FFF8F5; }
+  .follow-ups li.asked { border-color:var(--pm-green); background:#F0FFF4; opacity:0.7; }
+  .follow-ups li.asked::after { content:' (asked)'; font-size:10px; color:var(--pm-green); font-weight:600; }
+
+  /* Signals */
+  .signals-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin:10px 0; }
+  .signal { padding:8px 12px; border-radius:8px; font-size:12px; cursor:pointer; transition:all 0.2s; border:2px solid transparent; }
+  .signal-good { background:#F0FFF4; color:#2E7D32; }
+  .signal-good.selected { border-color:var(--pm-green); background:#C8E6C9; font-weight:600; }
+  .signal-bad { background:#FFF3E0; color:#E65100; }
+  .signal-bad.selected { border-color:var(--pm-red); background:#FFCCBC; font-weight:600; }
+
+  /* Chaos */
+  .chaos-selector { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:14px 0; }
+  .chaos-card { padding:14px; border-radius:10px; border:2px solid var(--border); cursor:pointer; transition:all 0.2s; background:white; }
+  .chaos-card:hover { border-color:var(--pm-orange); }
+  .chaos-card.selected { border-color:var(--pm-orange); background:#FFF8F5; box-shadow:0 0 0 3px rgba(255,108,55,0.15); }
+  .chaos-card h4 { font-size:13px; margin-bottom:3px; color:var(--pm-dark); }
+  .chaos-card p { font-size:11px; color:var(--text-light); }
+  .chaos-icon { font-size:22px; margin-bottom:6px; }
+
+  /* Notes */
+  .notes-area { width:100%; min-height:70px; padding:10px; border:1px solid var(--border); border-radius:8px; font-family:inherit; font-size:13px; resize:vertical; margin-top:6px; }
+  .notes-area:focus { outline:none; border-color:var(--pm-orange); box-shadow:0 0 0 3px rgba(255,108,55,0.1); }
+
+  /* Objections */
+  .objection-card { border:1px solid var(--border); border-radius:10px; margin:6px 0; overflow:hidden; }
+  .objection-header { padding:10px 14px; background:#FAFAFA; cursor:pointer; font-weight:600; font-size:13px; display:flex; justify-content:space-between; align-items:center; }
+  .objection-header:hover { background:#F0F0F0; }
+  .objection-body { padding:14px; display:none; font-size:13px; }
+  .objection-body.open { display:block; }
+  .objection-body .reframe { background:#E8F5E9; padding:10px; border-radius:8px; margin-top:8px; }
+
+  /* Metrics */
+  .metric-row { display:grid; grid-template-columns:110px 1fr 1fr; gap:6px; margin:3px 0; align-items:center; }
+  .metric-label { font-weight:600; font-size:12px; color:var(--pm-dark); }
+  .metric-input { padding:5px 8px; border:1px solid var(--border); border-radius:6px; font-size:12px; font-family:inherit; }
+  .metric-input:focus { outline:none; border-color:var(--pm-orange); }
+
+  .section-divider { border:none; border-top:1px solid var(--border); margin:14px 0; }
+  .postman-fit { display:inline-block; background:#FFF3E0; color:var(--pm-orange-dark); padding:3px 9px; border-radius:6px; font-size:11px; font-weight:600; margin-top:6px; }
+  .star-question { background:linear-gradient(135deg,#FFF8F5,#FFF3E0); border:2px solid var(--pm-orange); padding:14px; border-radius:10px; margin:10px 0; font-size:13px; }
+  .star-question::before { content:'STAR QUESTION'; display:block; font-size:9px; font-weight:700; letter-spacing:1px; color:var(--pm-orange); margin-bottom:4px; }
+
+  /* Closing */
+  .closing-question { display:flex; align-items:flex-start; gap:8px; padding:8px 10px; margin:4px 0; border-radius:8px; cursor:pointer; transition:all 0.15s; border:1px solid transparent; font-size:13px; }
+  .closing-question:hover { background:#F8F9FA; }
+  .closing-question.asked { background:#F0FFF4; border-color:var(--pm-green); }
+  .closing-question input[type="checkbox"] { margin-top:4px; accent-color:var(--pm-green); }
+  .closing-label { font-size:10px; font-weight:600; color:var(--text-light); text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:1px; }
+
+  /* Persona selector */
+  .persona-select { display:none; }
+  .persona-select.active { display:block; }
+  .persona-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin:24px 0; }
+  .persona-option { padding:24px; border-radius:14px; border:2px solid var(--border); cursor:pointer; transition:all 0.2s; background:white; text-align:center; }
+  .persona-option:hover { border-color:var(--pm-orange); transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,0.08); }
+  .persona-option.selected { border-color:var(--pm-orange); background:#FFF8F5; box-shadow:0 0 0 3px rgba(255,108,55,0.15); }
+  .persona-option .icon { font-size:40px; margin-bottom:12px; }
+  .persona-option h3 { font-size:16px; color:var(--pm-dark); margin-bottom:6px; }
+  .persona-option p { font-size:12px; color:var(--text-light); line-height:1.5; }
+  .persona-detail { margin-top:16px; text-align:left; }
+  .persona-detail h4 { font-size:12px; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-light); margin:10px 0 4px; }
+  .persona-detail ul { font-size:12px; padding-left:16px; color:var(--text); }
+  .persona-detail li { margin:2px 0; }
+
+  .hidden { display:none; }
+  @media (max-width:768px) {
+    .persona-grid { grid-template-columns:1fr; }
+    .chaos-selector { grid-template-columns:1fr; }
+    .signals-grid { grid-template-columns:1fr; }
+    .metric-row { grid-template-columns:1fr; }
   }
 </style>
 </head>
@@ -531,17 +160,97 @@
 <div class="header">
   <h1>SE Discovery Flow</h1>
   <div class="header-right">
+    <span class="persona-badge hidden" id="personaBadge" onclick="resetPersona()"></span>
     <div class="timer" id="timer">00:00</div>
-    <button class="btn btn-outline btn-small" onclick="toggleTimer()" id="timerBtn">Start Timer</button>
-    <button class="btn btn-orange btn-small" onclick="exportNotes()">Export Notes</button>
+    <button class="btn btn-outline btn-small" onclick="toggleTimer()" id="timerBtn">Start</button>
+    <button class="btn btn-orange btn-small" onclick="exportNotes()">Export</button>
+  </div>
+</div>
+<div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+
+<div class="container">
+
+<!-- PERSONA SELECTOR -->
+<div class="persona-select active" id="personaSelect">
+  <div class="card" style="text-align:center; border:none; background:transparent; box-shadow:none;">
+    <h2 style="font-size:22px; margin-bottom:4px;">Who are you meeting with?</h2>
+    <p style="color:var(--text-light); font-size:14px;">Select the buyer persona to load the right discovery flow.</p>
+  </div>
+
+  <div class="persona-grid">
+    <div class="persona-option" onclick="selectPersona('platform')">
+      <div class="icon">🏗️</div>
+      <h3>Platform Engineering</h3>
+      <p>Central teams owning API platform, standards, discovery, and developer experience.</p>
+      <div class="persona-detail">
+        <h4>They Care About</h4>
+        <ul>
+          <li>API discoverability and reuse</li>
+          <li>Governance and standardization</li>
+          <li>Developer experience and velocity</li>
+          <li>Reducing API sprawl</li>
+          <li>Breaking-change prevention</li>
+        </ul>
+        <h4>Postman Motion</h4>
+        <ul>
+          <li>API Catalog + Private API Network</li>
+          <li>SpecHub + Style Guide Governance</li>
+          <li>CLI in CI/CD</li>
+          <li>Agent Mode + MCP</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="persona-option" onclick="selectPersona('product')">
+      <div class="icon">🚀</div>
+      <h3>Product Engineering</h3>
+      <p>Full-stack squads that design, build, and operate product interfaces and APIs.</p>
+      <div class="persona-detail">
+        <h4>They Care About</h4>
+        <ul>
+          <li>Time to market / release speed</li>
+          <li>Cross-team collaboration (FE/BE/QA)</li>
+          <li>Keeping docs, tests, code in sync</li>
+          <li>Environment management</li>
+          <li>Fast issue triage</li>
+        </ul>
+        <h4>Postman Motion</h4>
+        <ul>
+          <li>Git-native workflows</li>
+          <li>Mocks for parallel dev</li>
+          <li>Collections + Environments</li>
+          <li>CLI + CI/CD integration</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="persona-option" onclick="selectPersona('quality')">
+      <div class="icon">🛡️</div>
+      <h3>Quality Engineering</h3>
+      <p>Centralized QA/CoE ensuring APIs are testable, reliable, and audit-ready.</p>
+      <div class="persona-detail">
+        <h4>They Care About</h4>
+        <ul>
+          <li>Reliability and risk reduction</li>
+          <li>Test tool consolidation</li>
+          <li>Shift-left contract testing</li>
+          <li>Compliance and audit readiness</li>
+          <li>SLA/SLO monitoring</li>
+        </ul>
+        <h4>Postman Motion</h4>
+        <ul>
+          <li>Collection Runner + CLI in CI/CD</li>
+          <li>Monitors for synthetic SLAs</li>
+          <li>API Catalog + Insights</li>
+          <li>Performance testing</li>
+        </ul>
+      </div>
+    </div>
   </div>
 </div>
 
-<div class="progress-bar">
-  <div class="progress-fill" id="progressFill" style="width: 0%"></div>
-</div>
-
-<div class="container">
+<!-- MAIN FLOW (hidden until persona selected) -->
+<div id="mainFlow" class="hidden">
 
   <div class="phase-nav" id="phaseNav">
     <div class="phase-tab active" data-phase="0">1. Frame <span class="time-hint">0-3m</span></div>
@@ -553,905 +262,821 @@
     <div class="phase-tab" data-phase="6">7. Summary</div>
   </div>
 
-  <!-- PHASE 0: Frame -->
+  <!-- PHASE 0: FRAME -->
   <div class="phase active" id="phase-0">
     <div class="card">
-      <div class="card-header">
-        <h2>Frame the Call</h2>
-        <span class="badge badge-question">0-3 min</span>
-      </div>
-      <p style="margin-bottom:12px; color: var(--text-light)">Set the tone. You're here to listen, not pitch. Get permission to ask questions.</p>
-
+      <div class="card-header"><h2>Frame the Call</h2><span class="badge badge-question">0-3 min</span></div>
+      <p style="margin-bottom:10px; color:var(--text-light); font-size:13px;">Set the tone. You're here to listen, not pitch.</p>
       <div class="talk-track" onclick="copyText(this)">
         "Thanks for taking the time. I'd love to understand how your team builds and manages APIs today so we can figure out if there's a fit. I'll mostly be asking questions -- sound good?"
         <span class="copy-hint">click to copy</span>
       </div>
-
-      <h3 style="margin-top:16px">Checklist</h3>
+      <h3 style="margin-top:14px">Checklist</h3>
       <ul class="follow-ups">
         <li onclick="toggleAsked(this)">Confirm how much time they have</li>
         <li onclick="toggleAsked(this)">Set expectation: "I'll be asking questions to understand your world"</li>
         <li onclick="toggleAsked(this)">Confirm attendees and their roles</li>
         <li onclick="toggleAsked(this)">Ask if there's anything specific they want to cover</li>
       </ul>
-
-      <h3 style="margin-top:16px">Notes</h3>
-      <textarea class="notes-area" id="notes-frame" placeholder="Attendees, roles, time available, anything they want to cover..."></textarea>
+      <h3 style="margin-top:14px">Notes</h3>
+      <textarea class="notes-area" id="notes-frame" placeholder="Attendees, roles, time, anything they want to cover..."></textarea>
     </div>
-
-    <div style="text-align: right; margin-top: 16px">
-      <button class="btn btn-orange" onclick="nextPhase()">Next: Start Broad</button>
-    </div>
+    <div style="text-align:right; margin-top:14px"><button class="btn btn-orange" onclick="nextPhase()">Next: Start Broad</button></div>
   </div>
 
-  <!-- PHASE 1: Broad Discovery -->
+  <!-- PHASE 1: BROAD -->
   <div class="phase" id="phase-1">
     <div class="card">
-      <div class="card-header">
-        <h2>Start Broad</h2>
-        <span class="badge badge-question">3-8 min</span>
-      </div>
-      <p style="margin-bottom:12px; color: var(--text-light)">Understand who they are, what success looks like, and why APIs matter in their world.</p>
-
+      <div class="card-header"><h2>Start Broad</h2><span class="badge badge-question">3-8 min</span></div>
+      <p style="margin-bottom:10px; color:var(--text-light); font-size:13px">Understand who they are, what success looks like, and why APIs matter.</p>
       <h3>Role and Context</h3>
       <ul class="follow-ups">
         <li onclick="toggleAsked(this)">"Can you walk me through your role and the teams you work most closely with?"</li>
         <li onclick="toggleAsked(this)">"Are you more hands-on, coordination-focused, or setting strategy?"</li>
       </ul>
-
-      <h3 style="margin-top:12px">Success Metrics</h3>
+      <h3 style="margin-top:10px">Success Metrics</h3>
       <ul class="follow-ups">
         <li onclick="toggleAsked(this)">"What are the top outcomes your team is measured on this quarter or year?"</li>
         <li onclick="toggleAsked(this)">"When leadership asks for API progress, what metrics do they care about most?"</li>
       </ul>
-
-      <h3 style="margin-top:12px">Strategic Context</h3>
+      <h3 style="margin-top:10px">Strategic Context</h3>
       <ul class="follow-ups">
         <li onclick="toggleAsked(this)">"What are the priorities or strategic initiatives going on in your company?"</li>
         <li onclick="toggleAsked(this)">"How does API fit into or support your company-wide business goals?"</li>
-        <li onclick="toggleAsked(this)">"Is your organization doing anything to formalize API collaboration -- a platform initiative, partner program, or developer portal?"</li>
+        <li onclick="toggleAsked(this)">"Is your org doing anything to formalize API collaboration -- a platform initiative, partner program, or developer portal?"</li>
       </ul>
-
-      <h3 style="margin-top:12px">Day-to-Day</h3>
+      <h3 style="margin-top:10px">Day-to-Day</h3>
       <ul class="follow-ups">
-        <li onclick="toggleAsked(this)">"What does a typical week look like for you when it comes to APIs -- where do most of your hours go?"</li>
-        <li onclick="toggleAsked(this)">"What parts of the process feel smooth today, and where does it usually slow down?"</li>
+        <li onclick="toggleAsked(this)">"What does a typical week look like when it comes to APIs -- where do most hours go?"</li>
+        <li onclick="toggleAsked(this)">"What parts of the process feel smooth, and where does it usually slow down?"</li>
       </ul>
-
-      <h3 style="margin-top:16px">Notes</h3>
-      <textarea class="notes-area" id="notes-broad" placeholder="Role, team structure, priorities, how APIs fit in, what success looks like..."></textarea>
+      <!-- Persona-specific broad questions injected here -->
+      <div id="broadPersonaQuestions"></div>
+      <h3 style="margin-top:14px">Notes</h3>
+      <textarea class="notes-area" id="notes-broad" placeholder="Role, team structure, priorities, how APIs fit in..."></textarea>
     </div>
-
-    <div style="display:flex; justify-content:space-between; margin-top:16px">
-      <button class="btn btn-outline" style="color:var(--text);border-color:var(--border)" onclick="prevPhase()">Back</button>
-      <button class="btn btn-orange" onclick="nextPhase()">Next: Identify Chaos</button>
-    </div>
+    <div style="display:flex; justify-content:space-between; margin-top:14px"><button class="btn btn-back" onclick="prevPhase()">Back</button><button class="btn btn-orange" onclick="nextPhase()">Next: Identify Chaos</button></div>
   </div>
 
-  <!-- PHASE 2: Chaos Identification -->
+  <!-- PHASE 2: CHAOS ID -->
   <div class="phase" id="phase-2">
     <div class="card">
-      <div class="card-header">
-        <h2>Identify the Chaos Type</h2>
-        <span class="badge badge-chaos">8-10 min</span>
-      </div>
-      <p style="margin-bottom:12px; color: var(--text-light)">Use the 5 anchor questions to identify which chaos type they have. Select one or more below based on what you hear.</p>
-
+      <div class="card-header"><h2>Identify the Chaos Type</h2><span class="badge badge-chaos">8-10 min</span></div>
+      <p style="margin-bottom:10px; color:var(--text-light); font-size:13px">Use anchor questions to find the chaos. Select what you hear.</p>
       <h3>5 Anchor Questions</h3>
       <ul class="follow-ups">
         <li onclick="toggleAsked(this)">"How do teams discover internal APIs today?"</li>
         <li onclick="toggleAsked(this)">"When someone needs to integrate with another team's API, what does day one look like -- and what usually slows them down?"</li>
-        <li onclick="toggleAsked(this)">"When an API ships or changes, how do docs, specs, tests, and what's actually running stay in sync -- or where do you see drift?"</li>
+        <li onclick="toggleAsked(this)">"When an API ships or changes, how do docs, specs, tests, and what's actually running stay in sync?"</li>
         <li onclick="toggleAsked(this)">"Are humans, agents, or both expected to consume these interfaces?"</li>
         <li onclick="toggleAsked(this)">"What would improve if finding, validating, and operating against those APIs got a lot easier?"</li>
       </ul>
-
       <hr class="section-divider">
-
-      <h3>Select the Chaos Type(s) You're Hearing</h3>
+      <h3>Select Chaos Type(s)</h3>
       <div class="chaos-selector">
-        <div class="chaos-card" onclick="toggleChaos(this, 'discovery')" data-chaos="discovery">
-          <div class="chaos-icon">🔍</div>
-          <h4>Discovery / Reuse</h4>
-          <p>Teams can't find, trust, or reuse internal APIs. "No single place", "people ask in Slack"</p>
-        </div>
-        <div class="chaos-card" onclick="toggleChaos(this, 'execution')" data-chaos="execution">
-          <div class="chaos-icon">⚡</div>
-          <h4>Execution / Quality</h4>
-          <p>They find APIs but don't know if they work or who owns them. "Docs were wrong", "found out in prod"</p>
-        </div>
-        <div class="chaos-card" onclick="toggleChaos(this, 'agent')" data-chaos="agent">
-          <div class="chaos-icon">🤖</div>
-          <h4>Agent / Tool</h4>
-          <p>Moving toward agents but no trusted interface layer. "No clean tool layer underneath"</p>
-        </div>
-        <div class="chaos-card" onclick="toggleChaos(this, 'fragmentation')" data-chaos="fragmentation">
-          <div class="chaos-icon">🔀</div>
-          <h4>Workflow Fragmentation</h4>
-          <p>API truth scattered across code, docs, tests, CI, runtime. "Nobody sees it together"</p>
-        </div>
+        <div class="chaos-card" onclick="toggleChaos(this,'discovery')"><div class="chaos-icon">🔍</div><h4>Discovery / Reuse</h4><p>Can't find, trust, or reuse internal APIs</p></div>
+        <div class="chaos-card" onclick="toggleChaos(this,'execution')"><div class="chaos-icon">⚡</div><h4>Execution / Quality</h4><p>Don't know if APIs work or who owns them</p></div>
+        <div class="chaos-card" onclick="toggleChaos(this,'agent')"><div class="chaos-icon">🤖</div><h4>Agent / Tool</h4><p>No trusted interface layer for agents</p></div>
+        <div class="chaos-card" onclick="toggleChaos(this,'fragmentation')"><div class="chaos-icon">🔀</div><h4>Workflow Fragmentation</h4><p>Truth scattered across code, docs, tests, CI</p></div>
       </div>
-
-      <h3 style="margin-top:16px">Notes</h3>
-      <textarea class="notes-area" id="notes-chaos" placeholder="What chaos signals are you hearing? Key quotes..."></textarea>
+      <h3 style="margin-top:14px">Notes</h3>
+      <textarea class="notes-area" id="notes-chaos" placeholder="Chaos signals, key quotes..."></textarea>
     </div>
-
-    <div style="display:flex; justify-content:space-between; margin-top:16px">
-      <button class="btn btn-outline" style="color:var(--text);border-color:var(--border)" onclick="prevPhase()">Back</button>
-      <button class="btn btn-orange" onclick="nextPhase()">Next: Deep Dive</button>
-    </div>
+    <div style="display:flex; justify-content:space-between; margin-top:14px"><button class="btn btn-back" onclick="prevPhase()">Back</button><button class="btn btn-orange" onclick="nextPhase()">Next: Deep Dive</button></div>
   </div>
 
-  <!-- PHASE 3: Deep Dive -->
+  <!-- PHASE 3: DEEP DIVE -->
   <div class="phase" id="phase-3">
     <div class="card">
-      <div class="card-header">
-        <h2>Deep Dive Questions</h2>
-        <span class="badge badge-question">10-22 min</span>
-      </div>
-      <p style="margin-bottom:16px; color: var(--text-light)">Based on the chaos type(s) you identified, drill into the relevant questions. Questions are shown for your selected chaos types. Click any to mark as asked.</p>
+      <div class="card-header"><h2>Deep Dive Questions</h2><span class="badge badge-question">10-22 min</span></div>
+      <p style="color:var(--text-light); font-size:13px">Persona-specific and chaos-type questions. Click to mark as asked.</p>
     </div>
 
-    <!-- Discovery/Reuse Questions -->
+    <!-- Persona-specific discovery questions -->
+    <div id="personaDeepDive"></div>
+
+    <!-- Chaos-type questions (same across personas) -->
     <div class="card chaos-questions" data-for="discovery">
-      <div class="card-header">
-        <h2>🔍 Discovery / Reuse</h2>
-        <span class="postman-fit">API Catalog</span>
-      </div>
-
-      <div class="star-question">
-        <strong>"How do developers discover the right internal API or service today?"</strong>
-      </div>
-
+      <div class="card-header"><h2>🔍 Discovery / Reuse</h2><span class="postman-fit">API Catalog + PAN</span></div>
+      <div class="star-question"><strong>"How do developers discover the right internal API or service today?"</strong></div>
       <ul class="follow-ups">
         <li onclick="toggleAsked(this)">"If I joined a new team tomorrow, where would I look first?"</li>
-        <li onclick="toggleAsked(this)">"Would I find approved APIs in one place, or piecing it together from repos, docs, Slack, tribal knowledge?"</li>
-        <li onclick="toggleAsked(this)">"How often do teams build or request something that already exists?"</li>
+        <li onclick="toggleAsked(this)">"Would I find approved APIs in one place, or piecing it together from repos, docs, Slack?"</li>
+        <li onclick="toggleAsked(this)">"How often do teams build something that already exists?"</li>
       </ul>
-
-      <h3 style="margin-top:16px">Signals</h3>
       <div class="signals-grid">
         <div class="signal signal-good" onclick="toggleSignal(this)">"It depends who you ask"</div>
         <div class="signal signal-good" onclick="toggleSignal(this)">"We have Backstage but people still ask in Slack"</div>
         <div class="signal signal-good" onclick="toggleSignal(this)">"There's no trusted source"</div>
-        <div class="signal signal-bad" onclick="toggleSignal(this)">"We have a portal everyone uses" (weak pain)</div>
+        <div class="signal signal-bad" onclick="toggleSignal(this)">"We have a portal everyone uses"</div>
       </div>
-
       <hr class="section-divider">
-
-      <div class="star-question">
-        <strong>"How do you know whether an API is actually ready for broader internal use?"</strong>
-      </div>
+      <div class="star-question"><strong>"How do you know whether an API is actually ready for broader internal use?"</strong></div>
       <ul class="follow-ups">
         <li onclick="toggleAsked(this)">"Is there a readiness checklist?"</li>
-        <li onclick="toggleAsked(this)">"Do you look at tests, examples, latency, pass rate, ownership, docs?"</li>
-        <li onclick="toggleAsked(this)">"Who decides an API is ready to be published or recommended internally?"</li>
+        <li onclick="toggleAsked(this)">"Who decides an API is ready to be published internally?"</li>
       </ul>
-
       <hr class="section-divider">
-
-      <div class="star-question">
-        <strong>"How are internal APIs or tools made available to non-owning teams?"</strong>
-      </div>
+      <div class="star-question"><strong>"How are internal APIs made available to non-owning teams?"</strong></div>
       <ul class="follow-ups">
         <li onclick="toggleAsked(this)">"Is there a formal publishing/distribution model?"</li>
-        <li onclick="toggleAsked(this)">"Do teams know which APIs are approved versus experimental?"</li>
         <li onclick="toggleAsked(this)">"Do consumers get examples and runnable assets, or only docs?"</li>
       </ul>
-
-      <textarea class="notes-area" id="notes-discovery" placeholder="Discovery/Reuse notes and key quotes..."></textarea>
+      <textarea class="notes-area" id="notes-discovery" placeholder="Discovery/Reuse notes..."></textarea>
     </div>
 
-    <!-- Execution/Quality Questions -->
     <div class="card chaos-questions" data-for="execution">
-      <div class="card-header">
-        <h2>⚡ Execution / Quality</h2>
-        <span class="postman-fit">Health + CI/CD + Ownership</span>
-      </div>
-
-      <div class="star-question">
-        <strong>"Walk me through what happens when a developer needs to call an API owned by another team -- not one they built."</strong>
-      </div>
+      <div class="card-header"><h2>⚡ Execution / Quality</h2><span class="postman-fit">Health + CI/CD + Ownership</span></div>
+      <div class="star-question"><strong>"Walk me through what happens when a developer needs to call an API owned by another team."</strong></div>
       <ul class="follow-ups">
-        <li onclick="toggleAsked(this)">"What's the first thing they do -- Slack someone, open a portal, clone a repo?"</li>
+        <li onclick="toggleAsked(this)">"What's the first thing they do -- Slack, portal, clone a repo?"</li>
         <li onclick="toggleAsked(this)">"If the first request fails, how do they figure out if it's their usage, the contract, or the service?"</li>
         <li onclick="toggleAsked(this)">"How long until they know who owns it?"</li>
-        <li onclick="toggleAsked(this)">"Do they ever discover that docs or the spec were wrong after they've already built to them?"</li>
+        <li onclick="toggleAsked(this)">"Do they discover docs were wrong after they've built to them?"</li>
       </ul>
-
-      <div class="signals-grid" style="margin-top:12px">
+      <div class="signals-grid">
         <div class="signal signal-good" onclick="toggleSignal(this)">"They usually have to ask the owning team"</div>
         <div class="signal signal-good" onclick="toggleSignal(this)">"Ownership is stale" / "Docs were wrong"</div>
         <div class="signal signal-good" onclick="toggleSignal(this)">"We found out in prod"</div>
-        <div class="signal signal-bad" onclick="toggleSignal(this)">"Clear path, current artifacts" (weak pain)</div>
+        <div class="signal signal-bad" onclick="toggleSignal(this)">"Clear path, current artifacts"</div>
       </div>
-
       <hr class="section-divider">
-
-      <div class="star-question">
-        <strong>"What usually breaks down between building an API and another team actually consuming it?"</strong>
-      </div>
+      <div class="star-question"><strong>"What usually breaks between building an API and another team consuming it?"</strong></div>
       <ul class="follow-ups">
-        <li onclick="toggleAsked(this)">"Is it discoverability, examples, test coverage, stale docs, auth, env config, ownership, or runtime surprises?"</li>
         <li onclick="toggleAsked(this)">"Where do handoffs fail most often?"</li>
         <li onclick="toggleAsked(this)">"What creates the most support burden for the API-owning team?"</li>
       </ul>
-
       <hr class="section-divider">
-
-      <div class="star-question">
-        <strong>"When something fails in production, how quickly can the consuming team determine whether it's the contract, the implementation, the environment, or their own usage?"</strong>
-      </div>
+      <div class="star-question"><strong>"When something fails in production, how fast can the consuming team tell if it's the contract, implementation, environment, or their usage?"</strong></div>
       <ul class="follow-ups">
-        <li onclick="toggleAsked(this)">"Do they have one workflow for that, or jump across multiple tools?"</li>
+        <li onclick="toggleAsked(this)">"One workflow for that, or jump across multiple tools?"</li>
         <li onclick="toggleAsked(this)">"Can they correlate test history with runtime behavior?"</li>
       </ul>
-
-      <hr class="section-divider">
-
-      <h3>Unbreakable APIs: Local Dev and CI/CD</h3>
-      <div class="star-question">
-        <strong>"Are your devs able to run the exact same tests on their laptops that you're running in your CI/CD pipelines?"</strong>
-      </div>
-      <ul class="follow-ups">
-        <li onclick="toggleAsked(this)">"How much time do frontend and QA folks lose waiting for a backend service to be finished?"</li>
-        <li onclick="toggleAsked(this)">"How do you keep tabs on pipeline performance, like which endpoints are failing most often?"</li>
-      </ul>
-
-      <textarea class="notes-area" id="notes-execution" placeholder="Execution/Quality notes and key quotes..."></textarea>
+      <textarea class="notes-area" id="notes-execution" placeholder="Execution/Quality notes..."></textarea>
     </div>
 
-    <!-- Workflow Fragmentation Questions -->
     <div class="card chaos-questions" data-for="fragmentation">
-      <div class="card-header">
-        <h2>🔀 Workflow Fragmentation</h2>
-        <span class="postman-fit">Git-connected Catalog</span>
-      </div>
-
-      <div class="star-question">
-        <strong>"When an API changes in code, what else has to get updated -- OpenAPI, internal wiki, collections, consumer comms -- and what usually lags or never gets touched?"</strong>
-      </div>
+      <div class="card-header"><h2>🔀 Workflow Fragmentation</h2><span class="postman-fit">Git-connected Catalog</span></div>
+      <div class="star-question"><strong>"When an API changes in code, what else has to get updated -- and what usually lags?"</strong></div>
       <ul class="follow-ups">
-        <li onclick="toggleAsked(this)">"Have you seen the spec and prod behavior not match? How often?"</li>
-        <li onclick="toggleAsked(this)">"If two engineers answered 'what does this endpoint do today?' -- one from the repo, one from staging -- would they always agree?"</li>
-        <li onclick="toggleAsked(this)">"Is it mostly code-first, spec-first, or mixed?"</li>
+        <li onclick="toggleAsked(this)">"Have you seen spec and prod behavior not match? How often?"</li>
+        <li onclick="toggleAsked(this)">"If two engineers answered 'what does this endpoint do?' from different sources, would they agree?"</li>
+        <li onclick="toggleAsked(this)">"Code-first, spec-first, or mixed?"</li>
       </ul>
-
-      <div class="signals-grid" style="margin-top:12px">
+      <div class="signals-grid">
         <div class="signal signal-good" onclick="toggleSignal(this)">"Drift" / "Spec behind"</div>
-        <div class="signal signal-good" onclick="toggleSignal(this)">"Two different stories depending where you look"</div>
-        <div class="signal signal-bad" onclick="toggleSignal(this)">"Stays aligned" / "One obvious place" (weak pain)</div>
+        <div class="signal signal-good" onclick="toggleSignal(this)">"Two different stories"</div>
+        <div class="signal signal-bad" onclick="toggleSignal(this)">"Stays aligned" / "One place"</div>
       </div>
-
       <hr class="section-divider">
-
-      <h3>Unbreakable APIs: API Visibility</h3>
-      <div class="star-question">
-        <strong>"Do you have a single system of record for API specs, ownership, and status?"</strong>
-      </div>
+      <div class="star-question"><strong>"Do you have a single system of record for API specs, ownership, and status?"</strong></div>
       <ul class="follow-ups">
-        <li onclick="toggleAsked(this)">"How do you currently detect API breaking changes?"</li>
-        <li onclick="toggleAsked(this)">"What happens operationally when a breaking change is identified?"</li>
-        <li onclick="toggleAsked(this)">"Is there a centralized way to see which APIs are active, deprecated, or unmanaged?"</li>
+        <li onclick="toggleAsked(this)">"How do you currently detect breaking changes?"</li>
+        <li onclick="toggleAsked(this)">"What happens operationally when one is identified?"</li>
       </ul>
-
       <hr class="section-divider">
-
-      <h3>Unbreakable APIs: API Drift and Governance</h3>
-      <div class="star-question">
-        <strong>"How do you make sure the code in your Git repo stays in sync with the docs and tests your devs use every day?"</strong>
-      </div>
+      <div class="star-question"><strong>"How do you make sure Git repo code stays in sync with docs and tests?"</strong></div>
       <ul class="follow-ups">
-        <li onclick="toggleAsked(this)">"Is catching a breaking change a manual code review, or automated in the PR?"</li>
-        <li onclick="toggleAsked(this)">"Do you usually find out an API has drifted through an internal alert, or a customer report?"</li>
+        <li onclick="toggleAsked(this)">"Manual code review or automated in the PR?"</li>
+        <li onclick="toggleAsked(this)">"Find out about drift through alerts or customer reports?"</li>
       </ul>
-
-      <textarea class="notes-area" id="notes-fragmentation" placeholder="Workflow Fragmentation notes and key quotes..."></textarea>
+      <textarea class="notes-area" id="notes-fragmentation" placeholder="Fragmentation notes..."></textarea>
     </div>
 
-    <!-- Agent/Tool Questions -->
     <div class="card chaos-questions" data-for="agent">
-      <div class="card-header">
-        <h2>🤖 Agent / Tool</h2>
-        <span class="postman-fit">Agent Mode + MCP</span>
-      </div>
-
-      <div class="star-question">
-        <strong>"Are agents or AI workflows expected to call internal APIs or tools?"</strong>
-      </div>
+      <div class="card-header"><h2>🤖 Agent / Tool</h2><span class="postman-fit">Agent Mode + MCP</span></div>
+      <div class="star-question"><strong>"Are agents or AI workflows expected to call internal APIs or tools?"</strong></div>
       <ul class="follow-ups">
         <li onclick="toggleAsked(this)">"Do you need agents to discover tools safely?"</li>
         <li onclick="toggleAsked(this)">"How do you decide which tools are approved for agent use?"</li>
-        <li onclick="toggleAsked(this)">"How do you test or validate what an agent can call?"</li>
-        <li onclick="toggleAsked(this)">"Do you care more about the agent UX, or the trustworthiness of the interfaces underneath?"</li>
+        <li onclick="toggleAsked(this)">"How do you test what an agent can call?"</li>
+        <li onclick="toggleAsked(this)">"Care more about agent UX, or trustworthiness of interfaces underneath?"</li>
       </ul>
-
-      <div class="signals-grid" style="margin-top:12px">
-        <div class="signal signal-good" onclick="toggleSignal(this)">"We care about agents but don't have a clean tool layer"</div>
-        <div class="signal signal-good" onclick="toggleSignal(this)">"Stay in Cursor but need reliable API context"</div>
-        <div class="signal signal-bad" onclick="toggleSignal(this)">"No agent plans" (weak here)</div>
+      <div class="signals-grid">
+        <div class="signal signal-good" onclick="toggleSignal(this)">"Care about agents but no clean tool layer"</div>
+        <div class="signal signal-good" onclick="toggleSignal(this)">"Stay in Cursor but need API context"</div>
+        <div class="signal signal-bad" onclick="toggleSignal(this)">"No agent plans"</div>
       </div>
-
       <hr class="section-divider">
-
-      <h3>Where Developers Work</h3>
-      <div class="star-question">
-        <strong>"Where are your developers doing most of their work today -- IDE, GitHub, CI, Postman, Backstage, Datadog, Cursor?"</strong>
-      </div>
+      <div class="star-question"><strong>"Where are developers doing most of their work -- IDE, GitHub, CI, Cursor?"</strong></div>
       <ul class="follow-ups">
-        <li onclick="toggleAsked(this)">"Do they want to stay in Cursor / VS Code / terminal?"</li>
+        <li onclick="toggleAsked(this)">"Want to stay in Cursor / VS Code / terminal?"</li>
         <li onclick="toggleAsked(this)">"Would they reject another standalone AI layer?"</li>
-        <li onclick="toggleAsked(this)">"Is the problem the interface, or the lack of trusted context underneath?"</li>
       </ul>
-
-      <textarea class="notes-area" id="notes-agent" placeholder="Agent/Tool notes and key quotes..."></textarea>
+      <textarea class="notes-area" id="notes-agent" placeholder="Agent/Tool notes..."></textarea>
     </div>
 
-    <!-- Cross-cutting: What they've tried, who feels it -->
+    <!-- Cross-cutting -->
     <div class="card">
-      <h2 style="margin-bottom:12px">Cross-Cutting Questions</h2>
-
+      <h2 style="margin-bottom:10px">Cross-Cutting</h2>
       <h3>Who Feels the Pain</h3>
       <ul class="follow-ups">
-        <li onclick="toggleAsked(this)">"Which teams feel this pain most acutely today?" (Platform? App teams? Producers? Consumers? DX? AI builders?)</li>
+        <li onclick="toggleAsked(this)">"Which teams feel this most acutely?" (Platform? App teams? Producers? QA? DX?)</li>
       </ul>
-
-      <h3 style="margin-top:12px">What They've Already Tried</h3>
+      <h3 style="margin-top:10px">What They've Tried</h3>
       <ul class="follow-ups">
-        <li onclick="toggleAsked(this)">"What have you already tried to solve this?" (Backstage, Datadog catalog, SwaggerHub, wiki, homegrown portal?)</li>
-        <li onclick="toggleAsked(this)">"What does that current approach do well?"</li>
+        <li onclick="toggleAsked(this)">"What have you already tried to solve this?" (Backstage, SwaggerHub, wiki, homegrown?)</li>
+        <li onclick="toggleAsked(this)">"What does that do well?"</li>
         <li onclick="toggleAsked(this)">"What still falls through the cracks?"</li>
-        <li onclick="toggleAsked(this)">"What questions still require Slack or tribal knowledge?"</li>
       </ul>
-
-      <textarea class="notes-area" id="notes-cross" placeholder="Who feels the pain, what they've tried, gaps in current approach..."></textarea>
+      <textarea class="notes-area" id="notes-cross" placeholder="Who, what tried, gaps..."></textarea>
     </div>
 
-    <div style="display:flex; justify-content:space-between; margin-top:16px">
-      <button class="btn btn-outline" style="color:var(--text);border-color:var(--border)" onclick="prevPhase()">Back</button>
-      <button class="btn btn-orange" onclick="nextPhase()">Next: Quantify Pain</button>
-    </div>
+    <div style="display:flex; justify-content:space-between; margin-top:14px"><button class="btn btn-back" onclick="prevPhase()">Back</button><button class="btn btn-orange" onclick="nextPhase()">Next: Quantify Pain</button></div>
   </div>
 
-  <!-- PHASE 4: Quantify -->
+  <!-- PHASE 4: QUANTIFY -->
   <div class="phase" id="phase-4">
     <div class="card">
-      <div class="card-header">
-        <h2>Quantify the Pain</h2>
-        <span class="badge badge-question">22-25 min</span>
-      </div>
-      <p style="margin-bottom:12px; color: var(--text-light)">Get numbers. Any phrase with a number, percent, "per week," "last quarter," or "hours lost" is gold for MEDDPICC Metrics.</p>
-
+      <div class="card-header"><h2>Quantify the Pain</h2><span class="badge badge-question">22-25 min</span></div>
+      <p style="margin-bottom:10px; color:var(--text-light); font-size:13px">Get numbers. Any metric is gold for MEDDPICC.</p>
       <h3>Pain Story</h3>
       <ul class="follow-ups">
         <li onclick="toggleAsked(this)">"Last time this hurt -- what happened, step by step?"</li>
         <li onclick="toggleAsked(this)">"How often does that show up?"</li>
-        <li onclick="toggleAsked(this)">"Who owned the fire drill -- engineering, QA, platform, or escalated up?"</li>
+        <li onclick="toggleAsked(this)">"Who owned the fire drill?"</li>
       </ul>
-
       <hr class="section-divider">
-
       <h3>Metrics Capture</h3>
-      <div style="margin:12px 0">
-        <div class="metric-row">
-          <span class="metric-label">Time</span>
-          <input class="metric-input" id="metric-time-probe" placeholder="Probe used..." style="font-size:12px;color:var(--text-light)">
-          <input class="metric-input" id="metric-time" placeholder="Their answer...">
-        </div>
-        <div class="metric-row">
-          <span class="metric-label">Scale</span>
-          <input class="metric-input" id="metric-scale-probe" placeholder="Probe used...">
-          <input class="metric-input" id="metric-scale" placeholder="Their answer...">
-        </div>
-        <div class="metric-row">
-          <span class="metric-label">Cost / Waste</span>
-          <input class="metric-input" id="metric-cost-probe" placeholder="Probe used...">
-          <input class="metric-input" id="metric-cost" placeholder="Their answer...">
-        </div>
-        <div class="metric-row">
-          <span class="metric-label">Risk</span>
-          <input class="metric-input" id="metric-risk-probe" placeholder="Probe used...">
-          <input class="metric-input" id="metric-risk" placeholder="Their answer...">
-        </div>
-        <div class="metric-row">
-          <span class="metric-label">Coverage</span>
-          <input class="metric-input" id="metric-coverage-probe" placeholder="Probe used...">
-          <input class="metric-input" id="metric-coverage" placeholder="Their answer...">
-        </div>
-      </div>
-
-      <h3 style="margin-top:12px">Example Probes</h3>
-      <ul class="follow-ups">
-        <li onclick="toggleAsked(this)">"Ballpark -- how long for a new hire to ship against another team's API?"</li>
-        <li onclick="toggleAsked(this)">"Order of magnitude -- how many APIs are we talking about?"</li>
-        <li onclick="toggleAsked(this)">"Ever quantify duplicate work or Slack churn on API questions?"</li>
-        <li onclick="toggleAsked(this)">"When this goes wrong, what does it cost the business?"</li>
-        <li onclick="toggleAsked(this)">"What fraction of APIs would you trust a new team to find without asking someone?"</li>
-      </ul>
-
-      <h3 style="margin-top:16px">Notes</h3>
-      <textarea class="notes-area" id="notes-quantify" placeholder="Numbers, quotes with metrics, pain stories..."></textarea>
+      <div id="metricsSection"></div>
+      <hr class="section-divider">
+      <h3>Probes</h3>
+      <div id="quantifyProbes"></div>
+      <h3 style="margin-top:14px">Notes</h3>
+      <textarea class="notes-area" id="notes-quantify" placeholder="Numbers, quotes, pain stories..."></textarea>
     </div>
-
-    <div style="display:flex; justify-content:space-between; margin-top:16px">
-      <button class="btn btn-outline" style="color:var(--text);border-color:var(--border)" onclick="prevPhase()">Back</button>
-      <button class="btn btn-orange" onclick="nextPhase()">Next: Close</button>
-    </div>
+    <div style="display:flex; justify-content:space-between; margin-top:14px"><button class="btn btn-back" onclick="prevPhase()">Back</button><button class="btn btn-orange" onclick="nextPhase()">Next: Close</button></div>
   </div>
 
-  <!-- PHASE 5: Close -->
+  <!-- PHASE 5: CLOSE -->
   <div class="phase" id="phase-5">
     <div class="card">
-      <div class="card-header">
-        <h2>Close the Call</h2>
-        <span class="badge badge-question">25-30 min</span>
-      </div>
-      <p style="margin-bottom:12px; color: var(--text-light)">Lock down trigger, KPI, urgency, future state, constraints, decision dynamics. Check off each as you ask.</p>
-
-      <div class="closing-question" onclick="toggleClosing(this)">
-        <input type="checkbox">
-        <div>
-          <span class="closing-label">Trigger</span>
-          "What sparked this -- or what's on the calendar that makes API/platform visibility more urgent?"
-        </div>
-      </div>
-      <div class="closing-question" onclick="toggleClosing(this)">
-        <input type="checkbox">
-        <div>
-          <span class="closing-label">KPI</span>
-          "If we fixed this, would leadership notice speed, risk, cost, or revenue first?"
-        </div>
-      </div>
-      <div class="closing-question" onclick="toggleClosing(this)">
-        <input type="checkbox">
-        <div>
-          <span class="closing-label">Urgency</span>
-          "When do you need to show progress -- or is there an immovable date?"
-        </div>
-      </div>
-      <div class="closing-question" onclick="toggleClosing(this)">
-        <input type="checkbox">
-        <div>
-          <span class="closing-label">Future State</span>
-          "Realistically -- what does 'good' look like here, in your words?"
-        </div>
-      </div>
-      <div class="closing-question" onclick="toggleClosing(this)">
-        <input type="checkbox">
-        <div>
-          <span class="closing-label">Constraints</span>
-          "Anything that's a hard no for engineering or security we should never pitch?"
-        </div>
-      </div>
-      <div class="closing-question" onclick="toggleClosing(this)">
-        <input type="checkbox">
-        <div>
-          <span class="closing-label">Decision Dynamics</span>
-          "Who besides you has to buy in -- budget vs technical?"
-        </div>
-      </div>
-      <div class="closing-question" onclick="toggleClosing(this)">
-        <input type="checkbox">
-        <div>
-          <span class="closing-label">Priorities</span>
-          "Of what we covered -- which two matter most in the next 90 days?"
-        </div>
-      </div>
-      <div class="closing-question" onclick="toggleClosing(this)">
-        <input type="checkbox">
-        <div>
-          <span class="closing-label">Next Steps</span>
-          "Who else needs to be in the next conversation -- and in what order?"
-        </div>
-      </div>
-
+      <div class="card-header"><h2>Close the Call</h2><span class="badge badge-question">25-30 min</span></div>
+      <div class="closing-question" onclick="toggleClosing(this)"><input type="checkbox"><div><span class="closing-label">Trigger</span>"What sparked this -- or what makes this timely now?"</div></div>
+      <div class="closing-question" onclick="toggleClosing(this)"><input type="checkbox"><div><span class="closing-label">KPI</span>"If we fixed this, would leadership notice speed, risk, cost, or revenue first?"</div></div>
+      <div class="closing-question" onclick="toggleClosing(this)"><input type="checkbox"><div><span class="closing-label">Urgency</span>"When do you need to show progress?"</div></div>
+      <div class="closing-question" onclick="toggleClosing(this)"><input type="checkbox"><div><span class="closing-label">Future State</span>"Realistically, what does 'good' look like here, in your words?"</div></div>
+      <div class="closing-question" onclick="toggleClosing(this)"><input type="checkbox"><div><span class="closing-label">Constraints</span>"Any hard nos for engineering or security?"</div></div>
+      <div class="closing-question" onclick="toggleClosing(this)"><input type="checkbox"><div><span class="closing-label">Decision</span>"Who besides you has to buy in -- budget vs technical?"</div></div>
+      <div class="closing-question" onclick="toggleClosing(this)"><input type="checkbox"><div><span class="closing-label">Priorities</span>"Of what we covered, which two matter most in the next 90 days?"</div></div>
+      <div class="closing-question" onclick="toggleClosing(this)"><input type="checkbox"><div><span class="closing-label">Next Steps</span>"Who else needs to be in the next conversation?"</div></div>
       <hr class="section-divider">
-
-      <h3>Success in 60-90 Days</h3>
-      <div class="talk-track" onclick="copyText(this)">
-        "A lot of teams don't have this written down yet -- which is fine. If we fast-forward 60-90 days after a focused pilot, what would you want to be true so you'd say 'this was worth it'?"
-        <span class="copy-hint">click to copy</span>
-      </div>
-
-      <h3 style="margin-top:16px">Notes</h3>
-      <textarea class="notes-area" id="notes-close" placeholder="Trigger, KPI, urgency, future state, constraints, decision dynamics, next steps..."></textarea>
+      <h3>60-90 Day Success</h3>
+      <div class="talk-track" onclick="copyText(this)">"If we fast-forward 60-90 days after a focused pilot, what would you want to be true so you'd say 'this was worth it'?"<span class="copy-hint">click to copy</span></div>
+      <div id="successMenu"></div>
+      <h3 style="margin-top:14px">Notes</h3>
+      <textarea class="notes-area" id="notes-close" placeholder="Trigger, KPI, urgency, future state, constraints, next steps..."></textarea>
     </div>
 
-    <!-- Objection Handling -->
+    <!-- Objections -->
     <div class="card">
-      <div class="card-header">
-        <h2>Objection Quick Reference</h2>
-        <span class="badge badge-objection">If needed</span>
-      </div>
-
-      <div class="objection-card">
-        <div class="objection-header" onclick="toggleObjection(this)">
-          "We already have an internal developer portal" <span>+</span>
-        </div>
-        <div class="objection-body">
-          <p><strong>What it means:</strong> Pain is real -- they invested eng capacity. Portal is likely a visibility layer, not enforceable system of record.</p>
-          <div class="reframe">
-            <strong>Reframe:</strong> "The fact that you built a portal tells me this problem is real. Keep it as the front door. Use Postman as the out-of-the-box management plane underneath -- integrate instead of rebuilding."
-          </div>
-        </div>
-      </div>
-
-      <div class="objection-card">
-        <div class="objection-header" onclick="toggleObjection(this)">
-          "We use Datadog for observability" <span>+</span>
-        </div>
-        <div class="objection-body">
-          <p><strong>What it means:</strong> O11y vendors don't provide dev-test visibility on APIs. Gateway vendors miss the dev side.</p>
-          <div class="reframe">
-            <strong>Reframe:</strong> "Datadog is great for runtime. The gap is usually dev-test visibility -- specs versioned with code, contract validation in CI, catalog linking design to production. That's complementary, not competitive."
-          </div>
-        </div>
-      </div>
-
-      <div class="objection-card">
-        <div class="objection-header" onclick="toggleObjection(this)">
-          "Team/Pro version has everything we need" <span>+</span>
-        </div>
-        <div class="objection-body">
-          <p><strong>What it means:</strong> They see Postman as individual productivity, not platform governance.</p>
-          <div class="reframe">
-            <strong>Reframe:</strong> "The question isn't whether devs can test APIs. It's: do you have visibility into all APIs, can you enforce governance across hundreds of services, and can you catch breaking changes before production?"
-          </div>
-        </div>
-      </div>
-
-      <div class="objection-card">
-        <div class="objection-header" onclick="toggleObjection(this)">
-          "Postman is just a testing tool" <span>+</span>
-        </div>
-        <div class="objection-body">
-          <p><strong>What it means:</strong> No connection to Git or CI. No contract enforcement. No governance layer.</p>
-          <div class="reframe">
-            <strong>Reframe:</strong> "Testing is where most orgs start. The shift is turning testing into enforceable governance -- contracts validated in PR, same workflows in CI, org-wide visibility into API health."
-          </div>
-        </div>
-      </div>
-
-      <div class="objection-card">
-        <div class="objection-header" onclick="toggleObjection(this)">
-          "We already have governance / linting" <span>+</span>
-        </div>
-        <div class="objection-body">
-          <p><strong>What it means:</strong> They equate governance with style checks. May not block behavioral breaking changes.</p>
-          <div class="reframe">
-            <strong>Reframe:</strong> "Linting ensures consistency. The real risk is contract drift that breaks downstream teams. Postman works directly with your Git repo -- specs, tests, and collections live alongside code."
-          </div>
-        </div>
-      </div>
-
-      <div class="objection-card">
-        <div class="objection-header" onclick="toggleObjection(this)">
-          "Developers won't adopt another tool" <span>+</span>
-        </div>
-        <div class="objection-body">
-          <p><strong>What it means:</strong> Fear of friction from past top-down tool failures.</p>
-          <div class="reframe">
-            <strong>Reframe:</strong> "Do you have one tool for the entire API lifecycle? This isn't the dev decision -- this is yours to manage APIs at scale."
-          </div>
-        </div>
-      </div>
+      <div class="card-header"><h2>Objection Handling</h2><span class="badge badge-objection">If needed</span></div>
+      <div id="objectionsSection"></div>
     </div>
 
-    <div style="display:flex; justify-content:space-between; margin-top:16px">
-      <button class="btn btn-outline" style="color:var(--text);border-color:var(--border)" onclick="prevPhase()">Back</button>
-      <button class="btn btn-orange" onclick="nextPhase()">View Summary</button>
-    </div>
+    <div style="display:flex; justify-content:space-between; margin-top:14px"><button class="btn btn-back" onclick="prevPhase()">Back</button><button class="btn btn-orange" onclick="nextPhase()">View Summary</button></div>
   </div>
 
-  <!-- PHASE 6: Summary -->
+  <!-- PHASE 6: SUMMARY -->
   <div class="phase" id="phase-6">
     <div class="card">
-      <div class="card-header">
-        <h2>Call Summary</h2>
-        <span class="badge badge-signal">Post-Call</span>
-      </div>
-      <p style="margin-bottom:16px; color: var(--text-light)">Review your notes and captured data. Click "Export Notes" to copy everything.</p>
-
+      <div class="card-header"><h2>Call Summary</h2><span class="badge badge-signal">Post-Call</span></div>
       <div id="summaryContent"></div>
     </div>
-
-    <div style="display:flex; justify-content:space-between; margin-top:16px">
-      <button class="btn btn-outline" style="color:var(--text);border-color:var(--border)" onclick="prevPhase()">Back</button>
-      <button class="btn btn-orange" onclick="exportNotes()">Export All Notes</button>
-    </div>
+    <div style="display:flex; justify-content:space-between; margin-top:14px"><button class="btn btn-back" onclick="prevPhase()">Back</button><button class="btn btn-orange" onclick="exportNotes()">Export All Notes</button></div>
   </div>
 
-</div>
+</div><!-- end mainFlow -->
+</div><!-- end container -->
 
 <script>
-  // State
-  let currentPhase = 0;
-  let timerRunning = false;
-  let timerSeconds = 0;
-  let timerInterval = null;
-  let selectedChaos = new Set();
-  let selectedSignals = [];
+// ===== PERSONA DATA =====
+const PERSONAS = {
+  platform: {
+    name: 'Platform Engineering',
+    icon: '🏗️',
+    color: '#6C63FF',
+    who: 'Central teams owning API platform, standards, discovery, and developer experience. Usually under CTO/CIO.',
+    metrics: ['% cataloged/visible APIs', 'Developer productivity', '% APIs with approved guidelines', 'Breaking-change rate', 'Internal API reuse across BUs', 'MTTR for contract regressions', 'Golden path adoption'],
+    useCases: ['API Visibility & Ownership', 'API Contracts & Standards', 'API Catalog as system of record', 'Golden paths for new services'],
+    postmanFit: ['API Catalog + Private API Network', 'SpecHub + Style Guide Governance', 'Workspaces as collaboration unit', 'CLI in CI/CD to gate PRs', 'Monitors for SLAs and drift', 'Agent Mode + MCP connectivity'],
+    customers: ['Chubb', 'Fiserv', 'Verizon', 'T-Mobile', 'Guardian Life'],
+    broadQuestions: [
+      {title: 'API Sprawl & Tools', questions: [
+        '"How many different tools or processes are teams using to design, test, and publish APIs?"',
+        '"Do you run into duplicated APIs or inconsistent versions across teams?"'
+      ]},
+      {title: 'Governance & Standardization', questions: [
+        '"How do you currently enforce consistent API standards across engineering teams?"',
+        '"Do you have automated checks for API quality and style, or is this done manually?"'
+      ]},
+      {title: 'API Discovery & Reuse', questions: [
+        '"How easy is it for teams to discover existing APIs before creating new ones?"',
+        '"What challenges do you see in driving API reuse across your org?"'
+      ]}
+    ],
+    deepDiveQuestions: [
+      {title: 'Developer Experience & Velocity', fit: 'Workspaces + Mocks + Collections', questions: [
+        '"How do new developers onboard onto your API ecosystem?"',
+        '"Where are the biggest friction points in your API lifecycle?"',
+        '"What does the first week look like for someone joining a new team?"'
+      ], signals: [
+        {text: '"Onboarding takes weeks"', good: true},
+        {text: '"Each team has their own way"', good: true},
+        {text: '"Smooth onboarding, clear docs"', good: false}
+      ]},
+      {title: 'Catching Issues Early', fit: 'CLI + CI/CD + Governance', questions: [
+        '"At what stage do most issues get identified -- during development, QA, or after deployment?"',
+        '"Would automated contract or integration tests earlier in the lifecycle help reduce rework?"',
+        '"Can you block a PR if a contract breaks?"'
+      ], signals: [
+        {text: '"We catch it in QA or prod"', good: true},
+        {text: '"No automated gates"', good: true},
+        {text: '"We have CI gates that work"', good: false}
+      ]}
+    ],
+    quantifyProbes: [
+      '"Ballpark -- how long for a new hire to ship against another team\'s API?"',
+      '"Order of magnitude -- how many APIs are we talking about?"',
+      '"What fraction of APIs could a new team find without asking someone?"',
+      '"Ever quantify duplicate work or Slack churn on API questions?"',
+      '"How many hours per week does the platform team spend on API support requests?"'
+    ],
+    quantifyMetrics: [
+      {label: 'API Count', placeholder: '# of internal APIs/services'},
+      {label: 'Teams', placeholder: '# teams producing/consuming'},
+      {label: 'Onboarding', placeholder: 'Time for new dev to integrate'},
+      {label: 'Catalog %', placeholder: '% of APIs in catalog with owners'},
+      {label: 'Duplicates', placeholder: 'Estimated duplicate APIs/work'},
+      {label: 'Support', placeholder: 'Hours/week platform team on API support'}
+    ],
+    successSignals: [
+      'One domain fully visible in catalog with owners',
+      'New hire finds APIs without Slack',
+      'Governance runs in CI without being ignored',
+      'Platform lead can show dashboard to leadership',
+      'One squad stops DM\'ing API owner for "how do I call X?"'
+    ],
+    objections: [
+      {title: '"We already have an internal developer portal"', meaning: 'Pain is real -- they invested eng capacity. Portal is likely a visibility layer, not enforceable system of record.', reframe: '"The fact that you built a portal tells me this problem is real. Keep it as the front door. Use Postman as the management plane underneath -- integrate instead of rebuilding."'},
+      {title: '"We use Datadog for observability"', meaning: 'O11y vendors don\'t provide dev-test visibility. Gateway vendors miss the dev side.', reframe: '"Datadog is great for runtime. The gap is dev-test visibility -- specs versioned with code, contract validation in CI, catalog linking design to production. Complementary, not competitive."'},
+      {title: '"Developers won\'t adopt another tool"', meaning: 'Fear of friction from past top-down failures.', reframe: '"Postman works with Git, CLI, and IDE. Developers don\'t need to change tools -- they get trusted API context inside the tools they already use."'},
+      {title: '"We already have governance / linting"', meaning: 'They equate governance with style checks. May not block behavioral breaking changes.', reframe: '"Linting ensures consistency. The real risk is contract drift that breaks downstream teams. Postman validates contracts in PR and CI alongside code."'}
+    ]
+  },
 
-  // Phase navigation
-  const tabs = document.querySelectorAll('.phase-tab');
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      const phase = parseInt(tab.dataset.phase);
-      goToPhase(phase);
+  product: {
+    name: 'Product Engineering',
+    icon: '🚀',
+    color: '#00B894',
+    who: 'Full-stack squads designing, building, and operating product interfaces, UIs, mobile, microservices, and APIs. Owns customer journeys end-to-end.',
+    metrics: ['Time-to-release/market', 'Developer productivity', 'Lead time for changes', 'PR-to-prod cycle time', 'Pre-prod defect rate', 'Test coverage', 'Breaking-change rate', 'MTTR for API incidents'],
+    useCases: ['API Delivery & Release Confidence', 'Parallel development with mocks', 'Environment management', 'Fast issue triage & reproduction'],
+    postmanFit: ['Git-native workflows', 'Mocks for parallel FE/BE dev', 'Collections + Environments', 'CLI + CI/CD integration', 'Workspaces per service/squad', 'Agent Mode for spec generation'],
+    customers: ['Product-led teams', 'Full-stack squads'],
+    broadQuestions: [
+      {title: 'Release Speed & Risk', questions: [
+        '"How confident are you today that new API changes won\'t break existing customer flows?"',
+        '"Where do regressions typically get caught -- locally, during QA, or after deployment?"'
+      ]},
+      {title: 'Cross-Team Collaboration', questions: [
+        '"How do backend, frontend, and QA teams currently collaborate on APIs?"',
+        '"Do you have a shared place where designs, tests, and mocks live, or is it fragmented?"'
+      ]},
+      {title: 'Environment & Doc Drift', questions: [
+        '"How often do APIs, tests, or documentation fall out of sync across environments?"',
+        '"Does drift cause delays, confusion, or rework?"'
+      ]}
+    ],
+    deepDiveQuestions: [
+      {title: 'Troubleshooting & Reproduction', fit: 'Collections + Environments', questions: [
+        '"What does your process look like when a customer reports an API issue?"',
+        '"Is it easy to reproduce issues quickly, or lots of back-and-forth?"',
+        '"Can you capture a minimal failing case and share it with the team?"'
+      ], signals: [
+        {text: '"Takes hours to reproduce"', good: true},
+        {text: '"Lots of back-and-forth to triage"', good: true},
+        {text: '"We have good repro tooling"', good: false}
+      ]},
+      {title: 'Parallel Work & Mocking', fit: 'Mock Servers + Workspaces', questions: [
+        '"Can teams work in parallel today, or do they wait on other teams\' changes?"',
+        '"Would standardized mocks or test collections speed up feature delivery?"',
+        '"How do frontend teams build when the backend isn\'t ready?"'
+      ], signals: [
+        {text: '"Frontend blocked waiting for backend"', good: true},
+        {text: '"We stub things out ad-hoc"', good: true},
+        {text: '"Parallel work is smooth"', good: false}
+      ]},
+      {title: 'Change Management & Breaking Changes', fit: 'Git + CLI + Catalog', questions: [
+        '"How do you identify potential breaking changes before they ship?"',
+        '"How do you notify downstream consumers of API changes?"',
+        '"What\'s your versioning strategy?"'
+      ], signals: [
+        {text: '"Consumers find out after it breaks"', good: true},
+        {text: '"No formal notification process"', good: true},
+        {text: '"Clear versioning and comms"', good: false}
+      ]},
+      {title: 'Multi-Environment & Secrets', fit: 'Environments + Vault', questions: [
+        '"How do you manage variables and secrets across local/dev/staging/prod?"',
+        '"Do developers share environment configs, or everyone sets up their own?"',
+        '"Any issues with secrets leaking or env configs drifting?"'
+      ], signals: [
+        {text: '"Everyone has their own setup"', good: true},
+        {text: '"Secrets in Slack or .env files"', good: true},
+        {text: '"Centralized env management"', good: false}
+      ]}
+    ],
+    quantifyProbes: [
+      '"How long does a typical feature take from PR to production?"',
+      '"How much time does your team spend on regressions caused by API changes?"',
+      '"How often are frontend teams blocked waiting for backend?"',
+      '"When a customer reports an API issue, how long to reproduce and triage?"',
+      '"How many environments do you manage, and how often do configs drift?"'
+    ],
+    quantifyMetrics: [
+      {label: 'Cycle Time', placeholder: 'PR to prod (days/hours)'},
+      {label: 'Regression', placeholder: 'Time spent on API regressions/week'},
+      {label: 'Blocked', placeholder: 'How often FE blocked on BE'},
+      {label: 'Triage', placeholder: 'Time to reproduce issues'},
+      {label: 'Environments', placeholder: '# of envs, drift frequency'},
+      {label: 'Defects', placeholder: 'Pre-prod vs escaped defect rate'}
+    ],
+    successSignals: [
+      'Frontend team ships without waiting for backend (mocks)',
+      'New API changes don\'t break existing flows',
+      'Issue reproduction takes minutes, not hours',
+      'Same tests run locally and in CI',
+      'One squad\'s cycle time measurably improves'
+    ],
+    objections: [
+      {title: '"Postman is just a testing tool"', meaning: 'No connection to Git or CI. No contract enforcement.', reframe: '"Testing is where most start. The shift is turning testing into enforceable governance -- contracts validated in PR, same workflows in CI, org-wide visibility into API health."'},
+      {title: '"We already use Jest/pytest for API tests"', meaning: 'Code-level tests cover unit, but miss contract and integration layer.', reframe: '"Code tests validate implementation. Contract tests validate the agreement between services. Postman catches what unit tests miss -- the handoff between teams."'},
+      {title: '"We have a CI/CD pipeline already"', meaning: 'They have build/deploy. May lack API-specific quality gates.', reframe: '"Great -- Postman CLI plugs into your existing pipeline. The question is whether API contracts are validated as a gate before merge, not just that code compiles."'},
+      {title: '"Our team is too small for governance"', meaning: 'Governance feels heavyweight. They want speed.', reframe: '"It\'s not about heavyweight governance -- it\'s about catching breaking changes before they reach your customers. One collection in CI takes 10 minutes to set up and saves hours of firefighting."'}
+    ]
+  },
+
+  quality: {
+    name: 'Quality Engineering',
+    icon: '🛡️',
+    color: '#E17055',
+    who: 'Centralized QA/CoE ensuring APIs are testable, reliable, and audit-ready. Partners with Platform on governance and CIO/CISO on compliance.',
+    metrics: ['MTTD/MTTT (detect/triage)', 'Change failure rate', 'Escaped defects', '% endpoints with contract tests', 'Test flakiness rate', 'Breaking-change rate', 'SLA adherence (P95/P99)', 'Release rollback rate', 'Audit evidence completeness'],
+    useCases: ['API Delivery & Release Confidence', 'API Contracts & Standards', 'Test tool consolidation', 'Compliance & audit evidence', 'SLA/SLO monitoring'],
+    postmanFit: ['Collection Runner + CLI in CI/CD', 'Monitors for synthetic SLAs', 'API Catalog + Insights', 'Performance testing', 'Quality Hub workspace', 'Reporting across services/teams', 'AI: auto-generate tests from specs'],
+    customers: ['USAA', 'RBC', 'Worldpay', 'Goodleap', 'Choice Hotels'],
+    broadQuestions: [
+      {title: 'Reliability & Risk', questions: [
+        '"How do you currently ensure API changes don\'t break downstream services or customer experiences?"',
+        '"What happens today when a breaking change makes it to production?"'
+      ]},
+      {title: 'Tool Consolidation', questions: [
+        '"Are different teams using different tools or methods for testing APIs?"',
+        '"How consistent are your release gates and quality checks across engineering teams?"'
+      ]},
+      {title: 'Automation & Resourcing', questions: [
+        '"How much of your API testing today is manual versus automated?"',
+        '"Where are the biggest bottlenecks in your regression or contract testing process?"'
+      ]}
+    ],
+    deepDiveQuestions: [
+      {title: 'Compliance & Audit Readiness', fit: 'Reporting + Monitors + History', questions: [
+        '"How do you currently provide evidence for audits, compliance checks, or internal reviews?"',
+        '"Is it easy to show the history of API test results and quality metrics when needed?"',
+        '"Do you have repeatable evidence trails, or is it manual assembly?"'
+      ], signals: [
+        {text: '"Manual assembly for audits"', good: true},
+        {text: '"We scramble before compliance reviews"', good: true},
+        {text: '"Automated audit trails in place"', good: false}
+      ]},
+      {title: 'Contract & Shift-Left Testing', fit: 'CLI + CI/CD + Collections', questions: [
+        '"Are contract tests running at PR time, or only after merge/deploy?"',
+        '"How do you catch breaking changes before they reach consumers?"',
+        '"What\'s your test coverage for API contracts vs just implementation?"'
+      ], signals: [
+        {text: '"Tests run after deploy, not at PR"', good: true},
+        {text: '"Contract testing is ad-hoc"', good: true},
+        {text: '"Contract tests gate every PR"', good: false}
+      ]},
+      {title: 'Test Framework Fragmentation', fit: 'Collection Runner + Quality Hub', questions: [
+        '"How many different test frameworks are teams using for API testing?"',
+        '"Is there a standard test library or reusable test pack, or does each team build their own?"',
+        '"REST, GraphQL, gRPC -- do you use different tools for each protocol?"'
+      ], signals: [
+        {text: '"Every team uses something different"', good: true},
+        {text: '"No reusable test packs"', good: true},
+        {text: '"Standardized across the org"', good: false}
+      ]},
+      {title: 'SLA/SLO Monitoring & Performance', fit: 'Monitors + Performance Testing', questions: [
+        '"How do you monitor SLAs and SLOs for critical APIs beyond just uptime pings?"',
+        '"Do you test API performance under load before release, or only react to prod issues?"',
+        '"Can you tell the difference between a slow API and a broken contract?"'
+      ], signals: [
+        {text: '"We react to prod issues"', good: true},
+        {text: '"SLA monitoring is basic pings"', good: true},
+        {text: '"Comprehensive SLA monitoring"', good: false}
+      ]},
+      {title: 'Demo-Led Validation', fit: 'Full platform demo', questions: [
+        '"Would it be helpful to see how automated tests, monitors, and reports surface issues before they reach customers?"',
+        '"How do you evaluate tools that promise to reduce risk and increase release confidence?"'
+      ], signals: [
+        {text: '"Show me, don\'t tell me"', good: true},
+        {text: '"We need to see it work with our stack"', good: true}
+      ]}
+    ],
+    quantifyProbes: [
+      '"What\'s your change failure rate -- how often does a release require a rollback?"',
+      '"How many escaped defects hit production per month/quarter?"',
+      '"What percentage of your API endpoints have contract tests in CI?"',
+      '"How long does audit evidence assembly take?"',
+      '"How much time does QA spend on flaky test investigation?"'
+    ],
+    quantifyMetrics: [
+      {label: 'Failure Rate', placeholder: 'Change failure rate / rollback %'},
+      {label: 'Escaped', placeholder: 'Escaped defects per month'},
+      {label: 'Coverage', placeholder: '% endpoints with contract tests'},
+      {label: 'Flakiness', placeholder: 'Test flakiness rate'},
+      {label: 'Audit', placeholder: 'Time to assemble audit evidence'},
+      {label: 'SLA', placeholder: 'SLA adherence (P95/P99)'}
+    ],
+    successSignals: [
+      'Contract tests gate PRs for pilot team',
+      'Audit evidence generated automatically',
+      'One domain has standard test library across teams',
+      'Escaped defect rate measurably drops',
+      'QA team spends less time on flaky test investigation'
+    ],
+    objections: [
+      {title: '"We use Jest/pytest/JUnit for API tests already"', meaning: 'Code-level unit tests. Likely missing contract and integration layer.', reframe: '"Code tests validate implementation logic. Contract tests validate the agreement between services. Postman catches what unit tests miss -- the breaking change that passes locally but fails when services talk to each other."'},
+      {title: '"We use Pact for contract testing"', meaning: 'Consumer-driven contracts. May be complex to scale.', reframe: '"Pact is powerful for CDC. Postman adds a broader layer -- one tool for contract validation, performance, monitoring, and governance, all wired to the same API Catalog. Less tooling sprawl for your QA team."'},
+      {title: '"We have k6/JMeter for performance"', meaning: 'Separate perf tool. Likely disconnected from functional tests.', reframe: '"Those are great for load testing. The value of Postman is running the same collection for functional, contract, and performance tests -- one artifact, multiple purposes, all in CI."'},
+      {title: '"Our QA team is manual-first"', meaning: 'Low automation maturity. Opportunity to shift left.', reframe: '"That\'s actually the best starting point. Postman lets QA build tests without writing code, then gradually automate with Collection Runner and CLI. You shift left incrementally, not all at once."'},
+      {title: '"We need evidence for SOC2/PCI/HIPAA"', meaning: 'Compliance driver. Strong urgency.', reframe: '"Postman monitors and Collection Runner produce timestamped, exportable test results -- exactly what auditors want. One collection can serve as both the quality gate and the compliance evidence."'}
+    ]
+  }
+};
+
+// ===== STATE =====
+let currentPhase = 0;
+let currentPersona = null;
+let timerRunning = false;
+let timerSeconds = 0;
+let timerInterval = null;
+let selectedChaos = new Set();
+
+// ===== PERSONA SELECTION =====
+function selectPersona(key) {
+  currentPersona = key;
+  const p = PERSONAS[key];
+
+  // Show persona badge
+  const badge = document.getElementById('personaBadge');
+  badge.textContent = p.icon + ' ' + p.name;
+  badge.classList.remove('hidden');
+
+  // Hide selector, show flow
+  document.getElementById('personaSelect').classList.remove('active');
+  document.getElementById('mainFlow').classList.remove('hidden');
+
+  // Inject persona-specific content
+  injectBroadQuestions(p);
+  injectDeepDive(p);
+  injectMetrics(p);
+  injectQuantifyProbes(p);
+  injectSuccessMenu(p);
+  injectObjections(p);
+}
+
+function resetPersona() {
+  if (confirm('Switch persona? This will reset the flow.')) {
+    location.reload();
+  }
+}
+
+function injectBroadQuestions(p) {
+  let html = '';
+  p.broadQuestions.forEach(section => {
+    html += `<h3 style="margin-top:10px">${section.title} <span class="badge badge-persona">${p.name}</span></h3><ul class="follow-ups">`;
+    section.questions.forEach(q => {
+      html += `<li onclick="toggleAsked(this)">${q}</li>`;
     });
+    html += '</ul>';
+  });
+  document.getElementById('broadPersonaQuestions').innerHTML = html;
+}
+
+function injectDeepDive(p) {
+  let html = '';
+  p.deepDiveQuestions.forEach(section => {
+    html += `<div class="card"><div class="card-header"><h2>${p.icon} ${section.title}</h2><span class="postman-fit">${section.fit}</span></div>`;
+    section.questions.forEach((q, i) => {
+      if (i === 0) {
+        html += `<div class="star-question"><strong>${q}</strong></div>`;
+      } else {
+        html += `<ul class="follow-ups"><li onclick="toggleAsked(this)">${q}</li></ul>`;
+      }
+    });
+    if (section.signals) {
+      html += '<div class="signals-grid">';
+      section.signals.forEach(s => {
+        html += `<div class="signal signal-${s.good ? 'good' : 'bad'}" onclick="toggleSignal(this)">${s.text}</div>`;
+      });
+      html += '</div>';
+    }
+    html += '</div>';
+  });
+  document.getElementById('personaDeepDive').innerHTML = html;
+}
+
+function injectMetrics(p) {
+  let html = '';
+  p.quantifyMetrics.forEach(m => {
+    html += `<div class="metric-row"><span class="metric-label">${m.label}</span><input class="metric-input" placeholder="${m.placeholder}"><input class="metric-input" placeholder="Their answer..."></div>`;
+  });
+  document.getElementById('metricsSection').innerHTML = html;
+}
+
+function injectQuantifyProbes(p) {
+  let html = '<ul class="follow-ups">';
+  p.quantifyProbes.forEach(q => {
+    html += `<li onclick="toggleAsked(this)">${q}</li>`;
+  });
+  html += '</ul>';
+  document.getElementById('quantifyProbes').innerHTML = html;
+}
+
+function injectSuccessMenu(p) {
+  let html = '<div class="signals-grid" style="margin-top:10px">';
+  p.successSignals.forEach(s => {
+    html += `<div class="signal signal-good" onclick="toggleSignal(this)">${s}</div>`;
+  });
+  html += '</div>';
+  document.getElementById('successMenu').innerHTML = html;
+}
+
+function injectObjections(p) {
+  let html = '';
+  p.objections.forEach(o => {
+    html += `<div class="objection-card"><div class="objection-header" onclick="toggleObjection(this)">${o.title} <span>+</span></div><div class="objection-body"><p><strong>What it means:</strong> ${o.meaning}</p><div class="reframe"><strong>Reframe:</strong> ${o.reframe}</div></div></div>`;
+  });
+  document.getElementById('objectionsSection').innerHTML = html;
+}
+
+// ===== NAVIGATION =====
+const tabs = document.querySelectorAll('.phase-tab');
+tabs.forEach(tab => tab.addEventListener('click', () => goToPhase(parseInt(tab.dataset.phase))));
+
+function goToPhase(phase) {
+  if (phase > currentPhase) for (let i = currentPhase; i < phase; i++) { tabs[i].classList.add('completed'); tabs[i].classList.remove('active'); }
+  document.querySelectorAll('.phase').forEach(p => p.classList.remove('active'));
+  tabs.forEach(t => t.classList.remove('active'));
+  document.getElementById(`phase-${phase}`).classList.add('active');
+  tabs[phase].classList.add('active');
+  tabs[phase].classList.remove('completed');
+  currentPhase = phase;
+  document.getElementById('progressFill').style.width = ((currentPhase/6)*100)+'%';
+  if (phase === 3) updateDeepDiveVisibility();
+  if (phase === 6) buildSummary();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function nextPhase() { if (currentPhase < 6) goToPhase(currentPhase+1); }
+function prevPhase() { if (currentPhase > 0) goToPhase(currentPhase-1); }
+
+// ===== TIMER =====
+function toggleTimer() {
+  if (timerRunning) {
+    clearInterval(timerInterval); timerRunning = false;
+    document.getElementById('timerBtn').textContent = 'Resume';
+  } else {
+    timerInterval = setInterval(() => {
+      timerSeconds++;
+      const m = Math.floor(timerSeconds/60), s = timerSeconds%60;
+      const el = document.getElementById('timer');
+      el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      el.classList.remove('warning','danger');
+      if (m >= 25) el.classList.add('danger');
+      else if (m >= 20) el.classList.add('warning');
+    }, 1000);
+    timerRunning = true;
+    document.getElementById('timerBtn').textContent = 'Pause';
+  }
+}
+
+// ===== INTERACTIONS =====
+function toggleAsked(el) { el.classList.toggle('asked'); }
+function toggleSignal(el) { el.classList.toggle('selected'); }
+function toggleChaos(el, type) { el.classList.toggle('selected'); selectedChaos.has(type) ? selectedChaos.delete(type) : selectedChaos.add(type); }
+function toggleObjection(h) { const b=h.nextElementSibling, s=h.querySelector('span'); b.classList.toggle('open'); s.textContent=b.classList.contains('open')?'−':'+'; }
+function toggleClosing(el) { const cb=el.querySelector('input[type="checkbox"]'); cb.checked=!cb.checked; el.classList.toggle('asked',cb.checked); }
+function copyText(el) {
+  const text=el.textContent.replace('click to copy','').trim();
+  navigator.clipboard.writeText(text);
+  const h=el.querySelector('.copy-hint');
+  if(h){h.textContent='copied!'; setTimeout(()=>{h.textContent='click to copy';},1500);}
+}
+
+function updateDeepDiveVisibility() {
+  document.querySelectorAll('.chaos-questions').forEach(card => {
+    card.style.display = (selectedChaos.size===0||selectedChaos.has(card.dataset.for)) ? 'block' : 'none';
+  });
+}
+
+// ===== SUMMARY =====
+function buildSummary() {
+  const p = PERSONAS[currentPersona];
+  let html = `<div class="summary-section"><h4>Persona</h4><div style="padding:6px 0; font-size:14px">${p.icon} ${p.name}</div></div>`;
+
+  // Chaos
+  html += '<div class="summary-section"><h4>Chaos Types</h4>';
+  const chaosLabels = {discovery:'Discovery / Reuse', execution:'Execution / Quality', agent:'Agent / Tool', fragmentation:'Workflow Fragmentation'};
+  if (selectedChaos.size > 0) selectedChaos.forEach(c => html += `<div style="padding:4px 0; font-size:14px">${chaosLabels[c]}</div>`);
+  else html += '<div style="padding:4px 0; color:var(--text-light)">None selected</div>';
+  html += '</div>';
+
+  // Signals
+  const signals = document.querySelectorAll('.signal.selected');
+  if (signals.length > 0) {
+    html += '<div class="summary-section"><h4>Signals</h4>';
+    signals.forEach(s => html += `<div style="padding:3px 0; font-size:13px">${s.classList.contains('signal-good')?'✅':'⚠️'} ${s.textContent}</div>`);
+    html += '</div>';
+  }
+
+  // Metrics
+  const inputs = document.querySelectorAll('#metricsSection .metric-row');
+  let hasMetrics = false;
+  let mhtml = '<div class="summary-section"><h4>Metrics</h4>';
+  inputs.forEach(row => {
+    const label = row.querySelector('.metric-label')?.textContent;
+    const val = row.querySelectorAll('.metric-input')[1]?.value;
+    if (val) { hasMetrics = true; mhtml += `<div style="padding:3px 0; font-size:13px"><strong>${label}:</strong> ${val}</div>`; }
+  });
+  mhtml += '</div>';
+  if (hasMetrics) html += mhtml;
+
+  // Notes
+  const noteIds = ['notes-frame','notes-broad','notes-chaos','notes-discovery','notes-execution','notes-fragmentation','notes-agent','notes-cross','notes-quantify','notes-close'];
+  const noteLabels = ['Frame','Broad','Chaos ID','Discovery/Reuse','Execution/Quality','Fragmentation','Agent/Tool','Cross-Cutting','Quantify','Close'];
+  html += '<div class="summary-section"><h4>Notes</h4>';
+  noteIds.forEach((id,i) => {
+    const el = document.getElementById(id);
+    if (el?.value.trim()) html += `<div style="padding:4px 0; font-size:13px; border-bottom:1px solid #f0f0f0"><strong>${noteLabels[i]}:</strong><br>${el.value.replace(/\n/g,'<br>')}</div>`;
+  });
+  html += '</div>';
+
+  // Questions asked
+  const asked = document.querySelectorAll('.follow-ups li.asked');
+  if (asked.length > 0) {
+    html += `<div class="summary-section"><h4>Questions Asked (${asked.length})</h4>`;
+    asked.forEach(q => html += `<div style="padding:2px 0; font-size:12px">${q.textContent.replace(' (asked)','')}</div>`);
+    html += '</div>';
+  }
+
+  document.getElementById('summaryContent').innerHTML = html;
+}
+
+// ===== EXPORT =====
+function exportNotes() {
+  const p = PERSONAS[currentPersona];
+  let out = `DISCOVERY CALL NOTES\n====================\nDate: ${new Date().toLocaleDateString()}\nDuration: ${document.getElementById('timer').textContent}\nPersona: ${p.name}\n\n`;
+
+  const chaosLabels = {discovery:'Discovery / Reuse', execution:'Execution / Quality', agent:'Agent / Tool', fragmentation:'Workflow Fragmentation'};
+  out += 'CHAOS TYPE(S): ' + (selectedChaos.size > 0 ? Array.from(selectedChaos).map(c=>chaosLabels[c]).join(', ') : 'Not identified') + '\n\n';
+
+  const signals = document.querySelectorAll('.signal.selected');
+  if (signals.length > 0) {
+    out += 'SIGNALS HEARD:\n';
+    signals.forEach(s => out += `  ${s.classList.contains('signal-good')?'[BUY]':'[CAUTION]'} ${s.textContent}\n`);
+    out += '\n';
+  }
+
+  const inputs = document.querySelectorAll('#metricsSection .metric-row');
+  let hasM = false; let mt = 'METRICS:\n';
+  inputs.forEach(row => {
+    const label = row.querySelector('.metric-label')?.textContent;
+    const val = row.querySelectorAll('.metric-input')[1]?.value;
+    if (val) { hasM=true; mt += `  ${label}: ${val}\n`; }
+  });
+  if (hasM) out += mt + '\n';
+
+  const noteIds = ['notes-frame','notes-broad','notes-chaos','notes-discovery','notes-execution','notes-fragmentation','notes-agent','notes-cross','notes-quantify','notes-close'];
+  const noteLabels = ['FRAME','BROAD DISCOVERY','CHAOS ID','DISCOVERY/REUSE','EXECUTION/QUALITY','FRAGMENTATION','AGENT/TOOL','CROSS-CUTTING','PAIN QUANTIFICATION','CLOSE & NEXT STEPS'];
+  noteIds.forEach((id,i) => { const el=document.getElementById(id); if(el?.value.trim()) out += `${noteLabels[i]}:\n${el.value}\n\n`; });
+
+  out += 'CLOSING CHECKLIST:\n';
+  document.querySelectorAll('.closing-question').forEach(item => {
+    const cb=item.querySelector('input[type="checkbox"]');
+    const label=item.querySelector('.closing-label')?.textContent||'';
+    out += `  ${cb.checked?'[x]':'[ ]'} ${label}\n`;
   });
 
-  function goToPhase(phase) {
-    // Mark previous as completed
-    if (phase > currentPhase) {
-      for (let i = currentPhase; i < phase; i++) {
-        tabs[i].classList.add('completed');
-        tabs[i].classList.remove('active');
-      }
-    }
+  out += '\n---\nCRM / MEDDPICC STUB:\nTrigger event:\nPrimary KPI (speed / risk / cost / revenue):\nUrgency / deadline:\n\nM (Metrics):\nE (Economic Buyer):\nD (Decision Criteria):\nD (Decision Process):\nP (Paper Process):\nI (Identify Pain):\nC (Champion):\nC (Competition):\n';
 
-    document.querySelectorAll('.phase').forEach(p => p.classList.remove('active'));
-    tabs.forEach(t => t.classList.remove('active'));
-
-    document.getElementById(`phase-${phase}`).classList.add('active');
-    tabs[phase].classList.add('active');
-    tabs[phase].classList.remove('completed');
-
-    currentPhase = phase;
-    updateProgress();
-
-    if (phase === 3) updateDeepDiveVisibility();
-    if (phase === 6) buildSummary();
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  function nextPhase() {
-    if (currentPhase < 6) goToPhase(currentPhase + 1);
-  }
-
-  function prevPhase() {
-    if (currentPhase > 0) goToPhase(currentPhase - 1);
-  }
-
-  function updateProgress() {
-    const pct = (currentPhase / 6) * 100;
-    document.getElementById('progressFill').style.width = pct + '%';
-  }
-
-  // Timer
-  function toggleTimer() {
-    if (timerRunning) {
-      clearInterval(timerInterval);
-      timerRunning = false;
-      document.getElementById('timerBtn').textContent = 'Resume';
-    } else {
-      timerInterval = setInterval(() => {
-        timerSeconds++;
-        const mins = Math.floor(timerSeconds / 60);
-        const secs = timerSeconds % 60;
-        const display = `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
-        const el = document.getElementById('timer');
-        el.textContent = display;
-
-        el.classList.remove('warning', 'danger');
-        if (mins >= 25) el.classList.add('danger');
-        else if (mins >= 20) el.classList.add('warning');
-      }, 1000);
-      timerRunning = true;
-      document.getElementById('timerBtn').textContent = 'Pause';
-    }
-  }
-
-  // Question tracking
-  function toggleAsked(el) {
-    el.classList.toggle('asked');
-  }
-
-  // Chaos selection
-  function toggleChaos(el, type) {
-    el.classList.toggle('selected');
-    if (selectedChaos.has(type)) {
-      selectedChaos.delete(type);
-    } else {
-      selectedChaos.add(type);
-    }
-  }
-
-  function updateDeepDiveVisibility() {
-    document.querySelectorAll('.chaos-questions').forEach(card => {
-      const forChaos = card.dataset.for;
-      if (selectedChaos.size === 0 || selectedChaos.has(forChaos)) {
-        card.style.display = 'block';
-      } else {
-        card.style.display = 'none';
-      }
-    });
-  }
-
-  // Signal selection
-  function toggleSignal(el) {
-    el.classList.toggle('selected');
-  }
-
-  // Objection accordion
-  function toggleObjection(header) {
-    const body = header.nextElementSibling;
-    const span = header.querySelector('span');
-    body.classList.toggle('open');
-    span.textContent = body.classList.contains('open') ? '−' : '+';
-  }
-
-  // Closing questions
-  function toggleClosing(el) {
-    const cb = el.querySelector('input[type="checkbox"]');
-    cb.checked = !cb.checked;
-    el.classList.toggle('asked', cb.checked);
-  }
-
-  // Copy talk track
-  function copyText(el) {
-    const text = el.textContent.replace('click to copy', '').trim();
-    navigator.clipboard.writeText(text);
-    const hint = el.querySelector('.copy-hint');
-    if (hint) {
-      hint.textContent = 'copied!';
-      setTimeout(() => { hint.textContent = 'click to copy'; }, 1500);
-    }
-  }
-
-  // Build summary
-  function buildSummary() {
-    const container = document.getElementById('summaryContent');
-    let html = '';
-
-    // Chaos types
-    html += '<div class="summary-section"><h4>Chaos Types Identified</h4>';
-    if (selectedChaos.size > 0) {
-      selectedChaos.forEach(c => {
-        const labels = { discovery: 'Discovery / Reuse', execution: 'Execution / Quality', agent: 'Agent / Tool', fragmentation: 'Workflow Fragmentation' };
-        html += `<div class="summary-item">${labels[c]}</div>`;
-      });
-    } else {
-      html += '<div class="summary-item" style="color:var(--text-light)">None selected</div>';
-    }
-    html += '</div>';
-
-    // Selected signals
-    const signals = document.querySelectorAll('.signal.selected');
-    if (signals.length > 0) {
-      html += '<div class="summary-section"><h4>Signals Heard</h4>';
-      signals.forEach(s => {
-        const isGood = s.classList.contains('signal-good');
-        html += `<div class="summary-item">${isGood ? '✅' : '⚠️'} ${s.textContent}</div>`;
-      });
-      html += '</div>';
-    }
-
-    // Metrics
-    const metricFields = ['time', 'scale', 'cost', 'risk', 'coverage'];
-    const metricLabels = ['Time', 'Scale', 'Cost / Waste', 'Risk', 'Coverage'];
-    let hasMetrics = false;
-    let metricsHtml = '<div class="summary-section"><h4>Metrics Captured</h4>';
-    metricFields.forEach((f, i) => {
-      const val = document.getElementById(`metric-${f}`)?.value;
-      if (val) {
-        hasMetrics = true;
-        metricsHtml += `<div class="summary-item"><strong>${metricLabels[i]}:</strong> ${val}</div>`;
-      }
-    });
-    metricsHtml += '</div>';
-    if (hasMetrics) html += metricsHtml;
-
-    // All notes
-    const noteIds = ['notes-frame', 'notes-broad', 'notes-chaos', 'notes-discovery', 'notes-execution', 'notes-fragmentation', 'notes-agent', 'notes-cross', 'notes-quantify', 'notes-close'];
-    const noteLabels = ['Frame', 'Broad Discovery', 'Chaos Identification', 'Discovery/Reuse', 'Execution/Quality', 'Workflow Fragmentation', 'Agent/Tool', 'Cross-Cutting', 'Pain Quantification', 'Close'];
-
-    html += '<div class="summary-section"><h4>Notes</h4>';
-    noteIds.forEach((id, i) => {
-      const el = document.getElementById(id);
-      if (el && el.value.trim()) {
-        html += `<div class="summary-item"><strong>${noteLabels[i]}:</strong><br>${el.value.replace(/\n/g, '<br>')}</div>`;
-      }
-    });
-    html += '</div>';
-
-    // Questions asked
-    const asked = document.querySelectorAll('.follow-ups li.asked');
-    if (asked.length > 0) {
-      html += `<div class="summary-section"><h4>Questions Asked (${asked.length})</h4>`;
-      asked.forEach(q => {
-        html += `<div class="summary-item" style="font-size:13px">${q.textContent.replace(' (asked)', '')}</div>`;
-      });
-      html += '</div>';
-    }
-
-    container.innerHTML = html;
-  }
-
-  // Export notes
-  function exportNotes() {
-    let output = 'DISCOVERY CALL NOTES\n';
-    output += '====================\n';
-    output += `Date: ${new Date().toLocaleDateString()}\n`;
-    output += `Duration: ${document.getElementById('timer').textContent}\n\n`;
-
-    // Chaos types
-    output += 'CHAOS TYPE(S): ';
-    const labels = { discovery: 'Discovery / Reuse', execution: 'Execution / Quality', agent: 'Agent / Tool', fragmentation: 'Workflow Fragmentation' };
-    if (selectedChaos.size > 0) {
-      output += Array.from(selectedChaos).map(c => labels[c]).join(', ');
-    } else {
-      output += 'Not identified';
-    }
-    output += '\n\n';
-
-    // Signals
-    const signals = document.querySelectorAll('.signal.selected');
-    if (signals.length > 0) {
-      output += 'SIGNALS HEARD:\n';
-      signals.forEach(s => {
-        const type = s.classList.contains('signal-good') ? '[BUY]' : '[CAUTION]';
-        output += `  ${type} ${s.textContent}\n`;
-      });
-      output += '\n';
-    }
-
-    // Metrics
-    const metricFields = ['time', 'scale', 'cost', 'risk', 'coverage'];
-    const metricLabels2 = ['Time', 'Scale', 'Cost/Waste', 'Risk', 'Coverage'];
-    let hasMetrics = false;
-    let metricsText = 'METRICS:\n';
-    metricFields.forEach((f, i) => {
-      const val = document.getElementById(`metric-${f}`)?.value;
-      if (val) {
-        hasMetrics = true;
-        metricsText += `  ${metricLabels2[i]}: ${val}\n`;
-      }
-    });
-    if (hasMetrics) output += metricsText + '\n';
-
-    // Notes
-    const noteIds = ['notes-frame', 'notes-broad', 'notes-chaos', 'notes-discovery', 'notes-execution', 'notes-fragmentation', 'notes-agent', 'notes-cross', 'notes-quantify', 'notes-close'];
-    const noteLabels = ['FRAME', 'BROAD DISCOVERY', 'CHAOS IDENTIFICATION', 'DISCOVERY/REUSE', 'EXECUTION/QUALITY', 'WORKFLOW FRAGMENTATION', 'AGENT/TOOL', 'CROSS-CUTTING', 'PAIN QUANTIFICATION', 'CLOSE & NEXT STEPS'];
-    noteIds.forEach((id, i) => {
-      const el = document.getElementById(id);
-      if (el && el.value.trim()) {
-        output += `${noteLabels[i]}:\n${el.value}\n\n`;
-      }
-    });
-
-    // Closing checklist
-    const closingItems = document.querySelectorAll('.closing-question');
-    let closingText = 'CLOSING CHECKLIST:\n';
-    let hasClosing = false;
-    closingItems.forEach(item => {
-      const cb = item.querySelector('input[type="checkbox"]');
-      const label = item.querySelector('.closing-label')?.textContent || '';
-      const checked = cb.checked ? '[x]' : '[ ]';
-      closingText += `  ${checked} ${label}\n`;
-      if (cb.checked) hasClosing = true;
-    });
-    output += closingText + '\n';
-
-    // CRM stub
-    output += '---\nCRM / MEDDPICC STUB:\n';
-    output += 'Trigger event:\nPrimary KPI (speed / risk / cost / revenue):\nSecondary KPIs:\nUrgency / deadline:\n\n';
-    output += 'M (Metrics):\nE (Economic Buyer):\nD (Decision Criteria):\nD (Decision Process):\nP (Paper Process):\nI (Identify Pain):\nC (Champion):\nC (Competition):\n';
-
-    navigator.clipboard.writeText(output).then(() => {
-      alert('Notes copied to clipboard!');
-    }).catch(() => {
-      // Fallback
-      const blob = new Blob([output], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `discovery-notes-${new Date().toISOString().slice(0,10)}.txt`;
-      a.click();
-    });
-  }
+  navigator.clipboard.writeText(out).then(() => alert('Notes copied to clipboard!')).catch(() => {
+    const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([out],{type:'text/plain'}));
+    a.download=`discovery-notes-${new Date().toISOString().slice(0,10)}.txt`; a.click();
+  });
+}
 </script>
-
 </body>
 </html>
