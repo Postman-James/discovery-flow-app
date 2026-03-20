@@ -171,6 +171,8 @@
   .who-tag.selected { background:var(--pm-orange); color:white; border-color:var(--pm-orange); }
   .add-pain-btn { background:none; border:1px dashed var(--border); border-radius:8px; padding:8px; width:100%; font-size:12px; color:var(--text-light); cursor:pointer; margin-top:8px; }
   .add-pain-btn:hover { border-color:var(--pm-orange); color:var(--pm-orange); }
+  .remove-pain-btn { background:none; border:none; font-size:11px; color:var(--pm-red); cursor:pointer; float:right; padding:2px 6px; border-radius:4px; opacity:0.6; }
+  .remove-pain-btn:hover { opacity:1; background:#FFF0F0; }
 
   .hidden { display:none; }
   @media (max-width:768px) {
@@ -572,7 +574,7 @@
 
       <div id="painBlocks">
         <div class="pain-block" data-pain="1">
-          <h4>Pain 1</h4>
+          <h4>Pain 1 <button class="remove-pain-btn" onclick="removePainBlock(this)">remove</button></h4>
           <div class="pain-field"><label>What happened</label><input type="text" placeholder="Specific situation..." class="pain-input" data-field="what"></div>
           <div class="pain-field"><label>How often</label><input type="text" placeholder="Daily / weekly / per release..." class="pain-input" data-field="frequency"></div>
           <div class="pain-field"><label>Impact</label><input type="text" placeholder="Time lost, incidents, $, blocked launches..." class="pain-input" data-field="impact"></div>
@@ -1225,7 +1227,7 @@ function addPainBlock() {
   block.className = 'pain-block';
   block.dataset.pain = painCount;
   block.innerHTML = `
-    <h4>Pain ${painCount}</h4>
+    <h4>Pain ${painCount} <button class="remove-pain-btn" onclick="removePainBlock(this)">remove</button></h4>
     <div class="pain-field"><label>What happened</label><input type="text" placeholder="Specific situation..." class="pain-input" data-field="what"></div>
     <div class="pain-field"><label>How often</label><input type="text" placeholder="Daily / weekly / per release..." class="pain-input" data-field="frequency"></div>
     <div class="pain-field"><label>Impact</label><input type="text" placeholder="Time lost, incidents, $, blocked launches..." class="pain-input" data-field="impact"></div>
@@ -1242,6 +1244,11 @@ function addPainBlock() {
     <div class="pain-field"><label>Demo fix</label><input type="text" placeholder="Which demo moment addresses this pain?" class="pain-input" data-field="demo"></div>
   `;
   container.appendChild(block);
+}
+
+function removePainBlock(btn) {
+  const block = btn.closest('.pain-block');
+  block.remove();
 }
 
 function collectPains() {
