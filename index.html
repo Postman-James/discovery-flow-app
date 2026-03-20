@@ -79,6 +79,19 @@
 
   /* Follow-ups / questions */
   .follow-ups { margin:10px 0; padding-left:0; list-style:none; }
+  .q-item { margin:3px 0; border-radius:6px; border:1px solid transparent; transition:all 0.15s; overflow:hidden; }
+  .q-item:hover { border-color:var(--pm-orange); }
+  .q-item.asked { border-color:var(--pm-green); background:#F0FFF4; }
+  .q-text { padding:7px 11px; background:#FAFAFA; font-size:13px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; }
+  .q-item.asked .q-text { background:#F0FFF4; }
+  .q-text .q-status { font-size:10px; color:var(--pm-green); font-weight:600; display:none; }
+  .q-item.asked .q-text .q-status { display:inline; }
+  .q-response { display:none; padding:0 11px 8px; }
+  .q-item.asked .q-response { display:block; }
+  .q-response input { width:100%; padding:6px 10px; border:1px solid var(--border); border-radius:6px; font-size:12px; font-family:inherit; background:#FAFFFE; }
+  .q-response input:focus { outline:none; border-color:var(--pm-orange); box-shadow:0 0 0 2px rgba(255,108,55,0.1); }
+  .q-response input::placeholder { color:#aaa; }
+  /* Legacy li support for checklist items */
   .follow-ups li { padding:7px 11px; margin:3px 0; background:#FAFAFA; border-radius:6px; font-size:13px; border:1px solid transparent; cursor:pointer; transition:all 0.15s; }
   .follow-ups li:hover { border-color:var(--pm-orange); background:#FFF8F5; }
   .follow-ups li.asked { border-color:var(--pm-green); background:#F0FFF4; opacity:0.7; }
@@ -853,13 +866,16 @@ function resetPersona() {
   }
 }
 
+// Helper: generate a question item with inline response field
+function qItem(text) {
+  return `<div class="q-item"><div class="q-text" onclick="toggleQ(this)"><span>${text}</span><span class="q-status">asked</span></div><div class="q-response"><input type="text" placeholder="Their response..." onclick="event.stopPropagation()"></div></div>`;
+}
+
 function injectBroadQuestions(p) {
   let html = '';
   p.broadQuestions.forEach(section => {
     html += `<h3 style="margin-top:10px">${section.title} <span class="badge badge-persona">${p.name}</span></h3><ul class="follow-ups">`;
-    section.questions.forEach(q => {
-      html += `<li onclick="toggleAsked(this)">${q}</li>`;
-    });
+    section.questions.forEach(q => { html += qItem(q); });
     html += '</ul>';
   });
   document.getElementById('broadPersonaQuestions').innerHTML = html;
@@ -871,9 +887,9 @@ function injectDeepDive(p) {
     html += `<div class="card"><div class="card-header"><h2>${p.icon} ${section.title}</h2><span class="postman-fit">${section.fit}</span></div>`;
     section.questions.forEach((q, i) => {
       if (i === 0) {
-        html += `<div class="star-question"><strong>${q}</strong></div>`;
+        html += `<div class="star-question"><strong>${q}</strong></div><div class="follow-ups">${qItem(q)}</div>`;
       } else {
-        html += `<ul class="follow-ups"><li onclick="toggleAsked(this)">${q}</li></ul>`;
+        html += `<div class="follow-ups">${qItem(q)}</div>`;
       }
     });
     if (section.signals) {
@@ -898,9 +914,7 @@ function injectMetrics(p) {
 
 function injectQuantifyProbes(p) {
   let html = '<ul class="follow-ups">';
-  p.quantifyProbes.forEach(q => {
-    html += `<li onclick="toggleAsked(this)">${q}</li>`;
-  });
+  p.quantifyProbes.forEach(q => { html += qItem(q); });
   html += '</ul>';
   document.getElementById('quantifyProbes').innerHTML = html;
 }
@@ -964,7 +978,22 @@ function toggleTimer() {
 }
 
 // ===== INTERACTIONS =====
-function toggleAsked(el) { el.classList.toggle('asked'); }
+function toggleAsked(el) {
+  // Support both old <li> and new .q-item
+  if (el.classList.contains('q-item')) {
+    el.classList.toggle('asked');
+    if (el.classList.contains('asked')) {
+      const input = el.querySelector('.q-response input');
+      if (input) setTimeout(() => input.focus(), 50);
+    }
+  } else {
+    el.classList.toggle('asked');
+  }
+}
+function toggleQ(el) {
+  const item = el.closest('.q-item');
+  toggleAsked(item);
+}
 function toggleSignal(el) { el.classList.toggle('selected'); }
 function toggleChaos(el, type) { el.classList.toggle('selected'); selectedChaos.has(type) ? selectedChaos.delete(type) : selectedChaos.add(type); }
 function toggleObjection(h) { const b=h.nextElementSibling, s=h.querySelector('span'); b.classList.toggle('open'); s.textContent=b.classList.contains('open')?'−':'+'; }
@@ -1077,6 +1106,107 @@ function exportNotes() {
     a.download=`discovery-notes-${new Date().toISOString().slice(0,10)}.txt`; a.click();
   });
 }
+
+// ===== UPGRADE STATIC QUESTIONS TO Q-ITEMS =====
+// Convert static <li onclick="toggleAsked"> in discovery phases (1-5) to q-items with response fields.
+// Phase 0 checklist items stay as simple toggles.
+document.addEventListener('DOMContentLoaded', () => {
+  // Only upgrade li items that contain a quote (start with ") -- these are discovery questions
+  document.querySelectorAll('#phase-1 .follow-ups li, #phase-2 .follow-ups li, #phase-3 .follow-ups li, #phase-4 .follow-ups li').forEach(li => {
+    const text = li.textContent.trim();
+    if (text.startsWith('"') || text.startsWith('\u201C')) {
+      const div = document.createElement('div');
+      div.innerHTML = qItem(text);
+      const qEl = div.firstElementChild;
+      li.parentNode.replaceChild(qEl, li);
+    }
+  });
+});
+
+// ===== UPDATE EXPORT TO CAPTURE Q-ITEM RESPONSES =====
+function collectQResponses() {
+  const responses = [];
+  document.querySelectorAll('.q-item.asked').forEach(item => {
+    const q = item.querySelector('.q-text span:first-child')?.textContent.trim();
+    const r = item.querySelector('.q-response input')?.value.trim();
+    if (q) responses.push({question: q, response: r || '(no response captured)'});
+  });
+  return responses;
+}
+
+// Patch export to include responses
+const _origExport = exportNotes;
+exportNotes = function() {
+  const p = PERSONAS[currentPersona];
+  let out = `DISCOVERY CALL NOTES\n====================\nDate: ${new Date().toLocaleDateString()}\nDuration: ${document.getElementById('timer').textContent}\nPersona: ${p.name}\n\n`;
+
+  const chaosLabels = {discovery:'Discovery / Reuse', execution:'Execution / Quality', agent:'Agent / Tool', fragmentation:'Workflow Fragmentation'};
+  out += 'CHAOS TYPE(S): ' + (selectedChaos.size > 0 ? Array.from(selectedChaos).map(c=>chaosLabels[c]).join(', ') : 'Not identified') + '\n\n';
+
+  // Q&A responses
+  const responses = collectQResponses();
+  if (responses.length > 0) {
+    out += 'QUESTIONS & RESPONSES:\n';
+    responses.forEach(r => {
+      out += `\n  Q: ${r.question}\n  A: ${r.response}\n`;
+    });
+    out += '\n';
+  }
+
+  // Signals
+  const signals = document.querySelectorAll('.signal.selected');
+  if (signals.length > 0) {
+    out += 'SIGNALS HEARD:\n';
+    signals.forEach(s => out += `  ${s.classList.contains('signal-good')?'[BUY]':'[CAUTION]'} ${s.textContent}\n`);
+    out += '\n';
+  }
+
+  // Metrics
+  const inputs = document.querySelectorAll('#metricsSection .metric-row');
+  let hasM = false; let mt = 'METRICS:\n';
+  inputs.forEach(row => {
+    const label = row.querySelector('.metric-label')?.textContent;
+    const val = row.querySelectorAll('.metric-input')[1]?.value;
+    if (val) { hasM=true; mt += `  ${label}: ${val}\n`; }
+  });
+  if (hasM) out += mt + '\n';
+
+  // Notes
+  const noteIds = ['notes-frame','notes-broad','notes-chaos','notes-discovery','notes-execution','notes-fragmentation','notes-agent','notes-cross','notes-quantify','notes-close'];
+  const noteLabels = ['FRAME','BROAD DISCOVERY','CHAOS ID','DISCOVERY/REUSE','EXECUTION/QUALITY','FRAGMENTATION','AGENT/TOOL','CROSS-CUTTING','PAIN QUANTIFICATION','CLOSE & NEXT STEPS'];
+  noteIds.forEach((id,i) => { const el=document.getElementById(id); if(el?.value.trim()) out += `${noteLabels[i]}:\n${el.value}\n\n`; });
+
+  // Closing checklist
+  out += 'CLOSING CHECKLIST:\n';
+  document.querySelectorAll('.closing-question').forEach(item => {
+    const cb=item.querySelector('input[type="checkbox"]');
+    const label=item.querySelector('.closing-label')?.textContent||'';
+    out += `  ${cb.checked?'[x]':'[ ]'} ${label}\n`;
+  });
+
+  out += '\n---\nCRM / MEDDPICC STUB:\nTrigger event:\nPrimary KPI (speed / risk / cost / revenue):\nUrgency / deadline:\n\nM (Metrics):\nE (Economic Buyer):\nD (Decision Criteria):\nD (Decision Process):\nP (Paper Process):\nI (Identify Pain):\nC (Champion):\nC (Competition):\n';
+
+  navigator.clipboard.writeText(out).then(() => alert('Notes copied to clipboard!')).catch(() => {
+    const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([out],{type:'text/plain'}));
+    a.download=`discovery-notes-${new Date().toISOString().slice(0,10)}.txt`; a.click();
+  });
+};
+
+// Also update summary to show Q&A
+const _origBuildSummary = buildSummary;
+buildSummary = function() {
+  _origBuildSummary();
+  const responses = collectQResponses();
+  if (responses.length > 0) {
+    const container = document.getElementById('summaryContent');
+    let html = '<div class="summary-section"><h4>Questions & Responses (' + responses.length + ')</h4>';
+    responses.forEach(r => {
+      html += `<div style="padding:6px 0; font-size:13px; border-bottom:1px solid #f0f0f0"><strong>Q:</strong> ${r.question}<br><strong>A:</strong> ${r.response}</div>`;
+    });
+    html += '</div>';
+    container.innerHTML = html + container.innerHTML;
+  }
+};
 </script>
 </body>
 </html>
