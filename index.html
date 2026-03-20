@@ -147,7 +147,7 @@
   /* Persona selector */
   .persona-select { display:none; }
   .persona-select.active { display:block; }
-  .persona-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin:24px 0; }
+  .persona-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:24px 0; }
   .persona-option { padding:24px; border-radius:14px; border:2px solid var(--border); cursor:pointer; transition:all 0.2s; background:white; text-align:center; }
   .persona-option:hover { border-color:var(--pm-orange); transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,0.08); }
   .persona-option.selected { border-color:var(--pm-orange); background:#FFF8F5; box-shadow:0 0 0 3px rgba(255,108,55,0.15); }
@@ -271,6 +271,29 @@
           <li>Monitors for synthetic SLAs</li>
           <li>API Catalog + Insights</li>
           <li>Performance testing</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="persona-option" onclick="selectPersona('tiger')">
+      <div class="icon">🐯</div>
+      <h3>Tiger Team Workflow</h3>
+      <p>Nga Pham's End-to-End Discovery & Pitch framework. Pattern-based discovery across collaboration, testing, governance, security, monitoring.</p>
+      <div class="persona-detail">
+        <h4>Discovery Lenses</h4>
+        <ul>
+          <li>Collaboration patterns (4 types)</li>
+          <li>Test automation by API type</li>
+          <li>Governance by API type</li>
+          <li>Security discovery</li>
+          <li>Monitoring by API type</li>
+        </ul>
+        <h4>Unique Features</h4>
+        <ul>
+          <li>Answer-to-pattern mapping tables</li>
+          <li>API Maturity Assessment</li>
+          <li>Content mapping (pain to Postman)</li>
+          <li>AE/SE best practices</li>
         </ul>
       </div>
     </div>
@@ -910,6 +933,146 @@ const PERSONAS = {
       {title: '"Our QA team is manual-first"', meaning: 'Low automation maturity. Opportunity to shift left.', reframe: '"That\'s actually the best starting point. Postman lets QA build tests without writing code, then gradually automate with Collection Runner and CLI. You shift left incrementally, not all at once."'},
       {title: '"We need evidence for SOC2/PCI/HIPAA"', meaning: 'Compliance driver. Strong urgency.', reframe: '"Postman monitors and Collection Runner produce timestamped, exportable test results -- exactly what auditors want. One collection can serve as both the quality gate and the compliance evidence."'}
     ]
+  },
+  tiger: {
+    name: 'Tiger Team Workflow',
+    icon: '🐯',
+    color: '#F39C12',
+    who: 'Pattern-based discovery from Nga Pham\'s Tiger Team framework. Identifies collaboration patterns, maps API types to test/governance/monitoring approaches, and uses peer examples to drive urgency.',
+    metrics: ['Sprint cycle time', 'API handoff delays', 'Duplicate collections', 'Onboarding time', 'Breaking change rate', 'Governance compliance', 'API reuse rate'],
+    useCases: ['Collaboration pattern identification', 'Test automation maturity', 'Governance standardization', 'Security posture assessment', 'API Maturity Assessment'],
+    postmanFit: ['Collaborate & Shift Left', 'Drive Testing Automation', 'Standardize & Govern', 'Distribute & Adopt', 'Secure & Centralize'],
+    customers: ['Home Depot', 'Cisco', 'Nvidia', 'Pure Storage'],
+    broadQuestions: [
+      {title: 'Role & Influence', questions: [
+        '"Can you walk me through your role and the teams you work most closely with?"',
+        '"Are you more hands-on, coordination-focused, or setting strategy?"'
+      ]},
+      {title: 'Value & Metrics', questions: [
+        '"What are the top outcomes your team is measured on this quarter or year?"',
+        '"When leadership asks for API progress, what metrics do they care about most?"'
+      ]},
+      {title: 'Strategic Context', questions: [
+        '"What are the priorities or strategic initiatives going on in your company?"',
+        '"How does API fit into or support your company-wide business goals?"',
+        '"Is your organization doing anything to formalize or scale API collaboration?"'
+      ]},
+      {title: 'Friction & Flow', questions: [
+        '"What types of APIs do they build? (app-specific, reusable, partner/public)"',
+        '"What does a typical week look like when it comes to APIs -- where do most hours go?"',
+        '"What parts of the process feel smooth today, and where does it usually slow down?"'
+      ]},
+      {title: 'People & Coordination', questions: [
+        '"Who do you depend on most to get an API from idea to production?"',
+        '"How does that coordination usually happen -- meetings, tickets, shared tools?"'
+      ]}
+    ],
+    deepDiveQuestions: [
+      {title: 'Collaboration: Who\'s Involved?', fit: 'Workspaces + PAN + Forks', questions: [
+        '"When your team builds or changes an API, who else needs to be involved?"',
+        '"How do people outside your team find or try your APIs?"',
+        '"When someone gives feedback or finds an issue, how does that conversation happen?"'
+      ], signals: [
+        {text: '"Mostly just us" (Single team)', good: true},
+        {text: '"We loop in other teams" (Cross-team)', good: true},
+        {text: '"API review board / platform team" (Platform-wide)', good: true},
+        {text: '"Partners integrate into their systems" (Partner)', good: true}
+      ]},
+      {title: 'Collaboration: Delivery Speed', fit: 'Mocks + Collections + CI/CD', questions: [
+        '"What\'s the biggest thing that slows down API delivery for you?"',
+        '"How do you make sure everyone\'s using the same version of an API?"'
+      ], signals: [
+        {text: '"We wait on backend or QA" / "Docs outdated" (Sequential)', good: true},
+        {text: '"Cross-team dependencies" / "Duplicate APIs" (Fragmented)', good: true},
+        {text: '"Hard to enforce consistency" (Ready for standardization)', good: true},
+        {text: '"Partner onboarding takes too long" (Access/permissions)', good: true},
+        {text: '"Each team does it differently" (Hybrid)', good: true},
+        {text: '"Central catalog, versioned specs" (Governance working)', good: false}
+      ]},
+      {title: 'Test Automation: App-Specific APIs', fit: 'Collections + CLI + Monitors', questions: [
+        '"How do you validate new endpoints before merging code?"',
+        '"Do you automate happy-path and error scenarios?"',
+        '"Are your tests part of the CI/CD pipeline or run manually?"',
+        '"How often do you run smoke or regression suites?"'
+      ], signals: [
+        {text: '"Tests run manually after merge"', good: true},
+        {text: '"QA waits on dev before testing"', good: true},
+        {text: '"Tests are in CI/CD, automated"', good: false}
+      ]},
+      {title: 'Test Automation: Reusable/Shared APIs', fit: 'Contract Tests + Shared Collections', questions: [
+        '"Do multiple teams consume this API?"',
+        '"How do you prevent breaking changes across consumers?"',
+        '"Are contract or schema checks part of your release process?"',
+        '"How do you monitor performance or uptime in production?"'
+      ], signals: [
+        {text: '"No contract testing" / "Find out after deploy"', good: true},
+        {text: '"Consumers complain after changes"', good: true},
+        {text: '"Contract checks gate every release"', good: false}
+      ]},
+      {title: 'Governance: Standards & Reviews', fit: 'SpecHub + Spectral + CI/CD', questions: [
+        '"Who owns governance checks -- the developer or platform team?"',
+        '"How do you catch inconsistent error handling or missing fields early?"',
+        '"Are specs created before or after implementation?"',
+        '"Do you validate request/response schemas automatically?"'
+      ], signals: [
+        {text: '"No automated governance" / "Manual reviews"', good: true},
+        {text: '"Different teams follow different standards"', good: true},
+        {text: '"Comprehensive ruleset-driven governance"', good: false}
+      ]},
+      {title: 'Security: Current State', fit: 'Vault + Secret Scanner + SSO', questions: [
+        '"What\'s driving your focus on API security right now?"',
+        '"Can you share a recent example that triggered this focus?"',
+        '"What is your primary security concern right now?"',
+        '"What happens if this concern isn\'t addressed in the next 6-12 months?"',
+        '"Who owns API security today -- developer responsibility, security function, or both?"'
+      ], signals: [
+        {text: '"Recent incident or audit triggered this"', good: true},
+        {text: '"Credentials shared in Slack or repos"', good: true},
+        {text: '"No clear API security ownership"', good: true},
+        {text: '"Strong security posture already"', good: false}
+      ]},
+      {title: 'Monitoring: Visibility Gaps', fit: 'Monitors + Insights', questions: [
+        '"Do you run monitors today or rely on CI test results?"',
+        '"How quickly do you detect API issues before customers do?"',
+        '"Can you trace failures back to specific endpoints or contracts?"',
+        '"How do teams coordinate incident response across services?"'
+      ], signals: [
+        {text: '"We find out when customers report it"', good: true},
+        {text: '"Monitor infrastructure, not APIs"', good: true},
+        {text: '"Can\'t trace to specific endpoints"', good: true},
+        {text: '"Comprehensive API monitoring"', good: false}
+      ]}
+    ],
+    quantifyProbes: [
+      '"How long does it take a new hire to make their first API call against another team\'s API?"',
+      '"How many duplicate collections do you estimate exist across your org?"',
+      '"What\'s the biggest time sink -- handoffs, duplicated work, or outdated docs?"',
+      '"If it helps, we just worked with a similar company and they were seeing sprint cycles go from 3 weeks to 2 days with automated testing."',
+      '"What does it cost when an API breaking change makes it to production?"'
+    ],
+    quantifyMetrics: [
+      {label: 'Sprint Cycle', placeholder: 'Current sprint/release cycle time'},
+      {label: 'Handoff Time', placeholder: 'Days lost to API handoffs'},
+      {label: 'Duplicates', placeholder: 'Est. duplicate collections (34-50% typical)'},
+      {label: 'Onboarding', placeholder: 'Time for new dev to first API call'},
+      {label: 'Breaking Changes', placeholder: 'Frequency of breaking changes to prod'},
+      {label: 'Collaboration', placeholder: 'Pattern: single/cross-team/platform/partner'}
+    ],
+    successSignals: [
+      'Teams collaborate in shared workspaces instead of email/Slack',
+      'Tests run in CI/CD automatically, not manually after merge',
+      'Governance standards are consistent across teams',
+      'APIs are discoverable in a central catalog',
+      'Sprint cycles measurably shorter',
+      'Customer can articulate their maturity level and next steps'
+    ],
+    objections: [
+      {title: '"We don\'t have time for a full discovery process"', meaning: 'Senior persona, wants value fast. Multiple discovery sessions feel wasteful.', reframe: '"Understood. Let me blend a quick discovery with a targeted demo in this session. I\'ll ask a few questions to make sure what I show you is relevant, then we\'ll jump right in."'},
+      {title: '"We can\'t articulate our API pain points"', meaning: 'They know something\'s off but can\'t name it. Common with teams early in API maturity.', reframe: '"That\'s actually really common. Let me share what we see at similar companies -- [peer example]. Does any of that resonate?" Then let them react.'},
+      {title: '"We don\'t track hard metrics on APIs"', meaning: 'No baseline to measure improvement. Nick\'s cascading approach: solve collaboration first.', reframe: '"Most teams don\'t yet. That\'s actually one of the first things Postman helps with -- giving you visibility into what\'s happening. Let\'s start with collaboration and work from there."'},
+      {title: '"I\'m not the right person for this conversation"', meaning: 'Wrong stakeholder on the call. Need to get to the right audience.', reframe: '"I appreciate your time. Based on what you\'ve shared, it sounds like [persona] would benefit most from seeing this. Would you be open to connecting us? I can send you a quick summary to share with them."'},
+      {title: '"We already have a solution in place"', meaning: 'Incumbent tool. Need to find the gaps.', reframe: '"That\'s great -- what does that solution do well for you? And where do you still end up in Slack or tribal knowledge to get answers?" Let them describe the missing workflow.'}
+    ]
   }
 };
 
@@ -942,6 +1105,13 @@ function selectPersona(key) {
   injectQuantifyProbes(p);
   injectSuccessMenu(p);
   injectObjections(p);
+
+  if (key === 'tiger') {
+    // Hide chaos selector and chaos-type question cards for tiger flow
+    document.querySelectorAll('.chaos-selector, .chaos-questions').forEach(el => el.style.display = 'none');
+    // Update chaos phase description
+    document.querySelector('#phase-2 .card p').textContent = 'The Tiger Team flow uses collaboration patterns instead of chaos types. Use the 5 anchor questions below to understand their API landscape, then move to Deep Dive for pattern-based discovery.';
+  }
 }
 
 function resetPersona() {
