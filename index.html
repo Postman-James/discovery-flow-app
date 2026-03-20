@@ -392,6 +392,21 @@
       </div>
       <h3 style="margin-top:14px">Notes</h3>
       <textarea class="notes-area" id="notes-chaos" placeholder="Chaos signals, key quotes..."></textarea>
+
+      <!-- Tiger Team: Collaboration Pattern Selector (hidden by default) -->
+      <div id="tigerPatternSection" class="hidden">
+        <hr class="section-divider">
+        <h3>Select Collaboration Pattern(s)</h3>
+        <p style="margin-bottom:10px; color:var(--text-light); font-size:12px">Based on their answers above, which pattern(s) best describe how they work? This filters your Deep Dive questions.</p>
+        <div class="chaos-selector" id="patternSelector">
+          <div class="chaos-card" onclick="togglePattern(this,'single')"><div class="chaos-icon">👤</div><h4>Single Team</h4><p>"Mostly just us." Collaboration within one squad. Sequential handoffs, no shared design.</p></div>
+          <div class="chaos-card" onclick="togglePattern(this,'crossteam')"><div class="chaos-icon">🔄</div><h4>Cross-Team</h4><p>"We loop in other teams." Ad hoc collaboration, no early feedback, Slack/email sharing.</p></div>
+          <div class="chaos-card" onclick="togglePattern(this,'platformwide')"><div class="chaos-icon">🏛️</div><h4>Platform-Wide</h4><p>"API review board / standards team." Platform-led collaboration, governance visible.</p></div>
+          <div class="chaos-card" onclick="togglePattern(this,'partner')"><div class="chaos-icon">🤝</div><h4>Partner / Project</h4><p>"We work with vendors/clients." Cross-org collaboration, external consumers.</p></div>
+        </div>
+        <h3 style="margin-top:14px">Notes</h3>
+        <textarea class="notes-area" id="notes-pattern" placeholder="Collaboration pattern notes, key quotes..."></textarea>
+      </div>
     </div>
     <div style="display:flex; justify-content:space-between; margin-top:14px"><button class="btn btn-back" onclick="prevPhase()">Back</button><button class="btn btn-orange" onclick="nextPhase()">Next: Deep Dive</button></div>
   </div>
@@ -968,7 +983,7 @@ const PERSONAS = {
       ]}
     ],
     deepDiveQuestions: [
-      {title: 'Collaboration: Who\'s Involved?', fit: 'Workspaces + PAN + Forks', questions: [
+      {title: 'Collaboration: Who\'s Involved?', fit: 'Workspaces + PAN + Forks', patterns: ['single','crossteam','platformwide','partner'], questions: [
         '"When your team builds or changes an API, who else needs to be involved?"',
         '"How do people outside your team find or try your APIs?"',
         '"When someone gives feedback or finds an issue, how does that conversation happen?"'
@@ -978,7 +993,7 @@ const PERSONAS = {
         {text: '"API review board / platform team" (Platform-wide)', good: true},
         {text: '"Partners integrate into their systems" (Partner)', good: true}
       ]},
-      {title: 'Collaboration: Delivery Speed', fit: 'Mocks + Collections + CI/CD', questions: [
+      {title: 'Collaboration: Delivery Speed', fit: 'Mocks + Collections + CI/CD', patterns: ['single','crossteam','platformwide','partner'], questions: [
         '"What\'s the biggest thing that slows down API delivery for you?"',
         '"How do you make sure everyone\'s using the same version of an API?"'
       ], signals: [
@@ -989,7 +1004,7 @@ const PERSONAS = {
         {text: '"Each team does it differently" (Hybrid)', good: true},
         {text: '"Central catalog, versioned specs" (Governance working)', good: false}
       ]},
-      {title: 'Test Automation: App-Specific APIs', fit: 'Collections + CLI + Monitors', questions: [
+      {title: 'Test Automation: App-Specific APIs', fit: 'Collections + CLI + Monitors', patterns: ['single','crossteam'], questions: [
         '"How do you validate new endpoints before merging code?"',
         '"Do you automate happy-path and error scenarios?"',
         '"Are your tests part of the CI/CD pipeline or run manually?"',
@@ -999,7 +1014,7 @@ const PERSONAS = {
         {text: '"QA waits on dev before testing"', good: true},
         {text: '"Tests are in CI/CD, automated"', good: false}
       ]},
-      {title: 'Test Automation: Reusable/Shared APIs', fit: 'Contract Tests + Shared Collections', questions: [
+      {title: 'Test Automation: Reusable/Shared APIs', fit: 'Contract Tests + Shared Collections', patterns: ['crossteam','platformwide','partner'], questions: [
         '"Do multiple teams consume this API?"',
         '"How do you prevent breaking changes across consumers?"',
         '"Are contract or schema checks part of your release process?"',
@@ -1009,7 +1024,7 @@ const PERSONAS = {
         {text: '"Consumers complain after changes"', good: true},
         {text: '"Contract checks gate every release"', good: false}
       ]},
-      {title: 'Governance: Standards & Reviews', fit: 'SpecHub + Spectral + CI/CD', questions: [
+      {title: 'Governance: App-Specific APIs', fit: 'Workspace Rules + CI/CD Validation', patterns: ['single','crossteam'], questions: [
         '"Who owns governance checks -- the developer or platform team?"',
         '"How do you catch inconsistent error handling or missing fields early?"',
         '"Are specs created before or after implementation?"',
@@ -1019,7 +1034,27 @@ const PERSONAS = {
         {text: '"Different teams follow different standards"', good: true},
         {text: '"Comprehensive ruleset-driven governance"', good: false}
       ]},
-      {title: 'Security: Current State', fit: 'Vault + Secret Scanner + SSO', questions: [
+      {title: 'Governance: Reusable/Shared APIs', fit: 'SpecHub + Spectral + CI/CD', patterns: ['crossteam','platformwide'], questions: [
+        '"Do multiple teams consume this API?"',
+        '"How do you prevent breaking changes across consumers?"',
+        '"Are contract or schema checks part of your release process?"',
+        '"How do you enforce naming, structure, error standards, and version control?"'
+      ], signals: [
+        {text: '"No consistent standards across teams"', good: true},
+        {text: '"Breaking changes slip through"', good: true},
+        {text: '"Continuous validation in CI/CD"', good: false}
+      ]},
+      {title: 'Governance: Partner/External APIs', fit: 'Partner Workspaces + Change Mgmt', patterns: ['partner'], questions: [
+        '"How do you manage API changes with partners?"',
+        '"Do you expose specs externally or manage via gated access?"',
+        '"Are security and rate-limit policies standardized across APIs?"',
+        '"How are deprecations or contract changes communicated?"'
+      ], signals: [
+        {text: '"Partners find out after changes"', good: true},
+        {text: '"No gated access to specs"', good: true},
+        {text: '"Managed partner lifecycle"', good: false}
+      ]},
+      {title: 'Security: Current State', fit: 'Vault + Secret Scanner + SSO', patterns: ['single','crossteam','platformwide','partner'], questions: [
         '"What\'s driving your focus on API security right now?"',
         '"Can you share a recent example that triggered this focus?"',
         '"What is your primary security concern right now?"',
@@ -1031,16 +1066,35 @@ const PERSONAS = {
         {text: '"No clear API security ownership"', good: true},
         {text: '"Strong security posture already"', good: false}
       ]},
-      {title: 'Monitoring: Visibility Gaps', fit: 'Monitors + Insights', questions: [
+      {title: 'Monitoring: App-Specific APIs', fit: 'Monitors + Regression Alerts', patterns: ['single','crossteam'], questions: [
         '"Do you run monitors today or rely on CI test results?"',
         '"How quickly do you detect API issues before customers do?"',
-        '"Can you trace failures back to specific endpoints or contracts?"',
-        '"How do teams coordinate incident response across services?"'
+        '"Are you tracking uptime trends or only failures?"',
+        '"Who gets notified when something breaks?"'
       ], signals: [
         {text: '"We find out when customers report it"', good: true},
         {text: '"Monitor infrastructure, not APIs"', good: true},
+        {text: '"Comprehensive uptime monitoring"', good: false}
+      ]},
+      {title: 'Monitoring: Shared APIs', fit: 'Monitors + Insights Multi-Env', patterns: ['crossteam','platformwide'], questions: [
+        '"How do you monitor shared services across environments?"',
+        '"Do you capture latency and error trends over time?"',
+        '"Can you trace failures back to specific endpoints or contracts?"',
+        '"How do teams coordinate incident response across services?"'
+      ], signals: [
         {text: '"Can\'t trace to specific endpoints"', good: true},
-        {text: '"Comprehensive API monitoring"', good: false}
+        {text: '"No cross-environment monitoring"', good: true},
+        {text: '"Full dependency and latency monitoring"', good: false}
+      ]},
+      {title: 'Monitoring: Partner/External APIs', fit: 'Insights + Repro Mode', patterns: ['partner'], questions: [
+        '"How do you detect issues impacting external users?"',
+        '"Can you reproduce failing API calls with real data?"',
+        '"Do product teams have visibility into API performance and errors?"',
+        '"Are you monitoring undocumented or partner endpoints?"'
+      ], signals: [
+        {text: '"External users report issues first"', good: true},
+        {text: '"Can\'t reproduce partner failures"', good: true},
+        {text: '"Real-user error detection in place"', good: false}
       ]}
     ],
     quantifyProbes: [
@@ -1108,9 +1162,30 @@ function selectPersona(key) {
 
   if (key === 'tiger') {
     // Hide chaos selector and chaos-type question cards for tiger flow
-    document.querySelectorAll('.chaos-selector, .chaos-questions').forEach(el => el.style.display = 'none');
-    // Update chaos phase description
-    document.querySelector('#phase-2 .card p').textContent = 'The Tiger Team flow uses collaboration patterns instead of chaos types. Use the 5 anchor questions below to understand their API landscape, then move to Deep Dive for pattern-based discovery.';
+    document.querySelectorAll('.chaos-selector:not(#patternSelector), .chaos-questions').forEach(el => el.style.display = 'none');
+    // Show collaboration pattern selector
+    document.getElementById('tigerPatternSection').classList.remove('hidden');
+    // Update Phase 2 header and description for tiger
+    document.querySelector('#phase-2 .card h2').textContent = 'Identify Collaboration Pattern';
+    document.querySelector('#phase-2 .card .badge').textContent = '8-10 min';
+    document.querySelector('#phase-2 .card p').textContent = 'Use the anchor questions to understand how they coordinate API work. Then select the collaboration pattern(s) you hear. This filters your Deep Dive.';
+    // Update Phase 2 anchor questions for tiger (replace chaos-focused with collaboration-focused)
+    document.querySelector('#phase-2 .card h3').textContent = '5 Pattern Discovery Questions';
+    const anchorList = document.querySelector('#phase-2 .card .follow-ups');
+    anchorList.innerHTML = '';
+    const tigerAnchors = [
+      '"When your team builds or changes an API, who else needs to be involved?"',
+      '"How do people outside your team find or try your APIs?"',
+      '"When someone gives feedback or finds an issue, how does that conversation happen?"',
+      '"What\'s the biggest thing that slows down API delivery for you?"',
+      '"How do you make sure everyone\'s using the same version of an API?"'
+    ];
+    tigerAnchors.forEach(q => {
+      const li = document.createElement('li');
+      li.setAttribute('onclick', 'toggleAsked(this)');
+      li.textContent = q;
+      anchorList.appendChild(li);
+    });
   }
 }
 
@@ -1138,7 +1213,8 @@ function injectBroadQuestions(p) {
 function injectDeepDive(p) {
   let html = '';
   p.deepDiveQuestions.forEach(section => {
-    html += `<div class="card"><div class="card-header"><h2>${p.icon} ${section.title}</h2><span class="postman-fit">${section.fit}</span></div>`;
+    const patternAttr = section.patterns ? ` data-patterns="${section.patterns.join(',')}"` : '';
+    html += `<div class="card tiger-deep-card"${patternAttr}><div class="card-header"><h2>${p.icon} ${section.title}</h2><span class="postman-fit">${section.fit}</span></div>`;
     section.questions.forEach((q, i) => {
       if (i === 0) {
         html += `<div class="star-question"><strong>${q}</strong></div><div class="follow-ups">${qItem(q)}</div>`;
@@ -1250,6 +1326,11 @@ function toggleQ(el) {
 }
 function toggleSignal(el) { el.classList.toggle('selected'); }
 function toggleChaos(el, type) { el.classList.toggle('selected'); selectedChaos.has(type) ? selectedChaos.delete(type) : selectedChaos.add(type); }
+let selectedPatterns = new Set();
+function togglePattern(el, type) {
+  el.classList.toggle('selected');
+  selectedPatterns.has(type) ? selectedPatterns.delete(type) : selectedPatterns.add(type);
+}
 function toggleObjection(h) { const b=h.nextElementSibling, s=h.querySelector('span'); b.classList.toggle('open'); s.textContent=b.classList.contains('open')?'−':'+'; }
 function toggleClosing(el) { const cb=el.querySelector('input[type="checkbox"]'); cb.checked=!cb.checked; el.classList.toggle('asked',cb.checked); }
 function copyText(el) {
@@ -1260,9 +1341,19 @@ function copyText(el) {
 }
 
 function updateDeepDiveVisibility() {
-  document.querySelectorAll('.chaos-questions').forEach(card => {
-    card.style.display = (selectedChaos.size===0||selectedChaos.has(card.dataset.for)) ? 'block' : 'none';
-  });
+  if (currentPersona === 'tiger') {
+    // Filter tiger deep dive cards by selected collaboration patterns
+    document.querySelectorAll('.tiger-deep-card[data-patterns]').forEach(card => {
+      const cardPatterns = card.dataset.patterns.split(',');
+      const match = selectedPatterns.size === 0 || cardPatterns.some(p => selectedPatterns.has(p));
+      card.style.display = match ? 'block' : 'none';
+    });
+  } else {
+    // Filter chaos-type cards for other personas
+    document.querySelectorAll('.chaos-questions').forEach(card => {
+      card.style.display = (selectedChaos.size===0||selectedChaos.has(card.dataset.for)) ? 'block' : 'none';
+    });
+  }
 }
 
 // ===== SUMMARY =====
@@ -1271,11 +1362,19 @@ function buildSummary() {
   let html = `<div class="summary-section"><h4>Persona</h4><div style="padding:6px 0; font-size:14px">${p.icon} ${p.name}</div></div>`;
 
   // Chaos
-  html += '<div class="summary-section"><h4>Chaos Types</h4>';
-  const chaosLabels = {discovery:'Discovery / Reuse', execution:'Execution / Quality', agent:'Agent / Tool', fragmentation:'Workflow Fragmentation'};
-  if (selectedChaos.size > 0) selectedChaos.forEach(c => html += `<div style="padding:4px 0; font-size:14px">${chaosLabels[c]}</div>`);
-  else html += '<div style="padding:4px 0; color:var(--text-light)">None selected</div>';
-  html += '</div>';
+  if (currentPersona === 'tiger') {
+    html += '<div class="summary-section"><h4>Collaboration Patterns</h4>';
+    const patternLabels = {single:'Single Team', crossteam:'Cross-Team', platformwide:'Platform-Wide', partner:'Partner / Project'};
+    if (selectedPatterns.size > 0) selectedPatterns.forEach(p => html += `<div style="padding:4px 0; font-size:14px">${patternLabels[p]}</div>`);
+    else html += '<div style="padding:4px 0; color:var(--text-light)">None selected</div>';
+    html += '</div>';
+  } else {
+    html += '<div class="summary-section"><h4>Chaos Types</h4>';
+    const chaosLabels = {discovery:'Discovery / Reuse', execution:'Execution / Quality', agent:'Agent / Tool', fragmentation:'Workflow Fragmentation'};
+    if (selectedChaos.size > 0) selectedChaos.forEach(c => html += `<div style="padding:4px 0; font-size:14px">${chaosLabels[c]}</div>`);
+    else html += '<div style="padding:4px 0; color:var(--text-light)">None selected</div>';
+    html += '</div>';
+  }
 
   // Signals
   const signals = document.querySelectorAll('.signal.selected');
@@ -1323,8 +1422,13 @@ function exportNotes() {
   const p = PERSONAS[currentPersona];
   let out = `DISCOVERY CALL NOTES\n====================\nDate: ${new Date().toLocaleDateString()}\nDuration: ${document.getElementById('timer').textContent}\nPersona: ${p.name}\n\n`;
 
-  const chaosLabels = {discovery:'Discovery / Reuse', execution:'Execution / Quality', agent:'Agent / Tool', fragmentation:'Workflow Fragmentation'};
-  out += 'CHAOS TYPE(S): ' + (selectedChaos.size > 0 ? Array.from(selectedChaos).map(c=>chaosLabels[c]).join(', ') : 'Not identified') + '\n\n';
+  if (currentPersona === 'tiger') {
+    const patternLabels = {single:'Single Team', crossteam:'Cross-Team', platformwide:'Platform-Wide', partner:'Partner / Project'};
+    out += 'COLLABORATION PATTERN(S): ' + (selectedPatterns.size > 0 ? Array.from(selectedPatterns).map(p=>patternLabels[p]).join(', ') : 'Not identified') + '\n\n';
+  } else {
+    const chaosLabels = {discovery:'Discovery / Reuse', execution:'Execution / Quality', agent:'Agent / Tool', fragmentation:'Workflow Fragmentation'};
+    out += 'CHAOS TYPE(S): ' + (selectedChaos.size > 0 ? Array.from(selectedChaos).map(c=>chaosLabels[c]).join(', ') : 'Not identified') + '\n\n';
+  }
 
   const signals = document.querySelectorAll('.signal.selected');
   if (signals.length > 0) {
@@ -1443,8 +1547,13 @@ exportNotes = function() {
   const p = PERSONAS[currentPersona];
   let out = `DISCOVERY CALL NOTES\n====================\nDate: ${new Date().toLocaleDateString()}\nDuration: ${document.getElementById('timer').textContent}\nPersona: ${p.name}\n\n`;
 
-  const chaosLabels = {discovery:'Discovery / Reuse', execution:'Execution / Quality', agent:'Agent / Tool', fragmentation:'Workflow Fragmentation'};
-  out += 'CHAOS TYPE(S): ' + (selectedChaos.size > 0 ? Array.from(selectedChaos).map(c=>chaosLabels[c]).join(', ') : 'Not identified') + '\n\n';
+  if (currentPersona === 'tiger') {
+    const patternLabels2 = {single:'Single Team', crossteam:'Cross-Team', platformwide:'Platform-Wide', partner:'Partner / Project'};
+    out += 'COLLABORATION PATTERN(S): ' + (selectedPatterns.size > 0 ? Array.from(selectedPatterns).map(p=>patternLabels2[p]).join(', ') : 'Not identified') + '\n\n';
+  } else {
+    const chaosLabels2 = {discovery:'Discovery / Reuse', execution:'Execution / Quality', agent:'Agent / Tool', fragmentation:'Workflow Fragmentation'};
+    out += 'CHAOS TYPE(S): ' + (selectedChaos.size > 0 ? Array.from(selectedChaos).map(c=>chaosLabels2[c]).join(', ') : 'Not identified') + '\n\n';
+  }
 
   // Q&A responses
   const responses = collectQResponses();
