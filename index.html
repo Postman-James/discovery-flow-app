@@ -371,6 +371,7 @@
     <!-- Chaos-type questions (same across personas) -->
     <div class="card chaos-questions" data-for="discovery">
       <div class="card-header"><h2>🔍 Discovery / Reuse</h2><span class="postman-fit">API Catalog + PAN</span></div>
+
       <div class="star-question"><strong>"How do developers discover the right internal API or service today?"</strong></div>
       <ul class="follow-ups">
         <li onclick="toggleAsked(this)">"If I joined a new team tomorrow, where would I look first?"</li>
@@ -380,26 +381,39 @@
       <div class="signals-grid">
         <div class="signal signal-good" onclick="toggleSignal(this)">"It depends who you ask"</div>
         <div class="signal signal-good" onclick="toggleSignal(this)">"We have Backstage but people still ask in Slack"</div>
-        <div class="signal signal-good" onclick="toggleSignal(this)">"There's no trusted source"</div>
         <div class="signal signal-bad" onclick="toggleSignal(this)">"We have a portal everyone uses"</div>
       </div>
+
       <hr class="section-divider">
       <div class="star-question"><strong>"How do you know whether an API is actually ready for broader internal use?"</strong></div>
       <ul class="follow-ups">
         <li onclick="toggleAsked(this)">"Is there a readiness checklist?"</li>
         <li onclick="toggleAsked(this)">"Who decides an API is ready to be published internally?"</li>
       </ul>
+      <div class="signals-grid">
+        <div class="signal signal-good" onclick="toggleSignal(this)">"There isn't a consistent bar"</div>
+        <div class="signal signal-good" onclick="toggleSignal(this)">"Some teams publish great APIs, some don't"</div>
+        <div class="signal signal-bad" onclick="toggleSignal(this)">"We have a clear readiness bar"</div>
+      </div>
+
       <hr class="section-divider">
       <div class="star-question"><strong>"How are internal APIs made available to non-owning teams?"</strong></div>
       <ul class="follow-ups">
         <li onclick="toggleAsked(this)">"Is there a formal publishing/distribution model?"</li>
         <li onclick="toggleAsked(this)">"Do consumers get examples and runnable assets, or only docs?"</li>
       </ul>
+      <div class="signals-grid">
+        <div class="signal signal-good" onclick="toggleSignal(this)">"No formal model" / "Unclear what's approved"</div>
+        <div class="signal signal-good" onclick="toggleSignal(this)">"There's no trusted source"</div>
+        <div class="signal signal-bad" onclick="toggleSignal(this)">"Formal distribution, runnable assets"</div>
+      </div>
+
       <textarea class="notes-area" id="notes-discovery" placeholder="Discovery/Reuse notes..."></textarea>
     </div>
 
     <div class="card chaos-questions" data-for="execution">
       <div class="card-header"><h2>⚡ Execution / Quality</h2><span class="postman-fit">Health + CI/CD + Ownership</span></div>
+
       <div class="star-question"><strong>"Walk me through what happens when a developer needs to call an API owned by another team."</strong></div>
       <ul class="follow-ups">
         <li onclick="toggleAsked(this)">"What's the first thing they do -- Slack, portal, clone a repo?"</li>
@@ -409,27 +423,41 @@
       </ul>
       <div class="signals-grid">
         <div class="signal signal-good" onclick="toggleSignal(this)">"They usually have to ask the owning team"</div>
-        <div class="signal signal-good" onclick="toggleSignal(this)">"Ownership is stale" / "Docs were wrong"</div>
-        <div class="signal signal-good" onclick="toggleSignal(this)">"We found out in prod"</div>
-        <div class="signal signal-bad" onclick="toggleSignal(this)">"Clear path, current artifacts"</div>
+        <div class="signal signal-good" onclick="toggleSignal(this)">"Ownership is stale"</div>
+        <div class="signal signal-good" onclick="toggleSignal(this)">"Docs were wrong after we'd already built to them"</div>
+        <div class="signal signal-bad" onclick="toggleSignal(this)">"Clear path, current artifacts, fast escalation"</div>
       </div>
+
       <hr class="section-divider">
       <div class="star-question"><strong>"What usually breaks between building an API and another team consuming it?"</strong></div>
       <ul class="follow-ups">
         <li onclick="toggleAsked(this)">"Where do handoffs fail most often?"</li>
         <li onclick="toggleAsked(this)">"What creates the most support burden for the API-owning team?"</li>
       </ul>
+      <div class="signals-grid">
+        <div class="signal signal-good" onclick="toggleSignal(this)">"API team becomes a help desk"</div>
+        <div class="signal signal-good" onclick="toggleSignal(this)">"Internal consumers struggle to get started"</div>
+        <div class="signal signal-bad" onclick="toggleSignal(this)">"Consumption is smooth"</div>
+      </div>
+
       <hr class="section-divider">
       <div class="star-question"><strong>"When something fails in production, how fast can the consuming team tell if it's the contract, implementation, environment, or their usage?"</strong></div>
       <ul class="follow-ups">
         <li onclick="toggleAsked(this)">"One workflow for that, or jump across multiple tools?"</li>
         <li onclick="toggleAsked(this)">"Can they correlate test history with runtime behavior?"</li>
       </ul>
+      <div class="signals-grid">
+        <div class="signal signal-good" onclick="toggleSignal(this)">"Too many hops" / "We lose time proving ownership"</div>
+        <div class="signal signal-good" onclick="toggleSignal(this)">"We found out in prod"</div>
+        <div class="signal signal-bad" onclick="toggleSignal(this)">"One workflow, clear"</div>
+      </div>
+
       <textarea class="notes-area" id="notes-execution" placeholder="Execution/Quality notes..."></textarea>
     </div>
 
     <div class="card chaos-questions" data-for="fragmentation">
       <div class="card-header"><h2>🔀 Workflow Fragmentation</h2><span class="postman-fit">Git-connected Catalog</span></div>
+
       <div class="star-question"><strong>"When an API changes in code, what else has to get updated -- and what usually lags?"</strong></div>
       <ul class="follow-ups">
         <li onclick="toggleAsked(this)">"Have you seen spec and prod behavior not match? How often?"</li>
@@ -438,26 +466,40 @@
       </ul>
       <div class="signals-grid">
         <div class="signal signal-good" onclick="toggleSignal(this)">"Drift" / "Spec behind"</div>
-        <div class="signal signal-good" onclick="toggleSignal(this)">"Two different stories"</div>
-        <div class="signal signal-bad" onclick="toggleSignal(this)">"Stays aligned" / "One place"</div>
+        <div class="signal signal-good" onclick="toggleSignal(this)">"Two different stories depending where you look"</div>
+        <div class="signal signal-bad" onclick="toggleSignal(this)">"Stays aligned" / "One obvious place to look"</div>
       </div>
+
       <hr class="section-divider">
       <div class="star-question"><strong>"Do you have a single system of record for API specs, ownership, and status?"</strong></div>
       <ul class="follow-ups">
         <li onclick="toggleAsked(this)">"How do you currently detect breaking changes?"</li>
         <li onclick="toggleAsked(this)">"What happens operationally when one is identified?"</li>
       </ul>
+      <div class="signals-grid">
+        <div class="signal signal-good" onclick="toggleSignal(this)">"No centralized view" / "Depends on the team"</div>
+        <div class="signal signal-good" onclick="toggleSignal(this)">"We don't really track breaking changes"</div>
+        <div class="signal signal-bad" onclick="toggleSignal(this)">"Single system of record that works"</div>
+      </div>
+
       <hr class="section-divider">
       <div class="star-question"><strong>"How do you make sure Git repo code stays in sync with docs and tests?"</strong></div>
       <ul class="follow-ups">
         <li onclick="toggleAsked(this)">"Manual code review or automated in the PR?"</li>
         <li onclick="toggleAsked(this)">"Find out about drift through alerts or customer reports?"</li>
       </ul>
+      <div class="signals-grid">
+        <div class="signal signal-good" onclick="toggleSignal(this)">"We usually catch it in QA" / "Sometimes consumers tell us"</div>
+        <div class="signal signal-good" onclick="toggleSignal(this)">"Manual review only, no automated gates"</div>
+        <div class="signal signal-bad" onclick="toggleSignal(this)">"Automated sync, stays aligned"</div>
+      </div>
+
       <textarea class="notes-area" id="notes-fragmentation" placeholder="Fragmentation notes..."></textarea>
     </div>
 
     <div class="card chaos-questions" data-for="agent">
       <div class="card-header"><h2>🤖 Agent / Tool</h2><span class="postman-fit">Agent Mode + MCP</span></div>
+
       <div class="star-question"><strong>"Are agents or AI workflows expected to call internal APIs or tools?"</strong></div>
       <ul class="follow-ups">
         <li onclick="toggleAsked(this)">"Do you need agents to discover tools safely?"</li>
@@ -467,15 +509,20 @@
       </ul>
       <div class="signals-grid">
         <div class="signal signal-good" onclick="toggleSignal(this)">"Care about agents but no clean tool layer"</div>
-        <div class="signal signal-good" onclick="toggleSignal(this)">"Stay in Cursor but need API context"</div>
         <div class="signal signal-bad" onclick="toggleSignal(this)">"No agent plans"</div>
       </div>
+
       <hr class="section-divider">
       <div class="star-question"><strong>"Where are developers doing most of their work -- IDE, GitHub, CI, Cursor?"</strong></div>
       <ul class="follow-ups">
         <li onclick="toggleAsked(this)">"Want to stay in Cursor / VS Code / terminal?"</li>
         <li onclick="toggleAsked(this)">"Would they reject another standalone AI layer?"</li>
       </ul>
+      <div class="signals-grid">
+        <div class="signal signal-good" onclick="toggleSignal(this)">"Stay in Cursor but need reliable API context"</div>
+        <div class="signal signal-bad" onclick="toggleSignal(this)">"Another UI is a non-starter, no context need"</div>
+      </div>
+
       <textarea class="notes-area" id="notes-agent" placeholder="Agent/Tool notes..."></textarea>
     </div>
 
