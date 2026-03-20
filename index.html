@@ -159,6 +159,19 @@
   .persona-detail ul { font-size:12px; padding-left:16px; color:var(--text); }
   .persona-detail li { margin:2px 0; }
 
+  /* Pain capture */
+  .pain-block { background:#FAFAFA; border:1px solid var(--border); border-radius:10px; padding:14px; margin:10px 0; }
+  .pain-block h4 { font-size:13px; color:var(--pm-dark); margin-bottom:8px; }
+  .pain-field { display:grid; grid-template-columns:90px 1fr; gap:6px; margin:4px 0; align-items:center; }
+  .pain-field label { font-size:12px; font-weight:600; color:var(--text-light); }
+  .pain-field input { padding:5px 8px; border:1px solid var(--border); border-radius:6px; font-size:12px; font-family:inherit; }
+  .pain-field input:focus { outline:none; border-color:var(--pm-orange); }
+  .who-tags { display:flex; gap:4px; flex-wrap:wrap; }
+  .who-tag { padding:3px 10px; border-radius:12px; font-size:11px; font-weight:600; cursor:pointer; border:1px solid var(--border); background:white; color:var(--text-light); transition:all 0.15s; }
+  .who-tag.selected { background:var(--pm-orange); color:white; border-color:var(--pm-orange); }
+  .add-pain-btn { background:none; border:1px dashed var(--border); border-radius:8px; padding:8px; width:100%; font-size:12px; color:var(--text-light); cursor:pointer; margin-top:8px; }
+  .add-pain-btn:hover { border-color:var(--pm-orange); color:var(--pm-orange); }
+
   .hidden { display:none; }
   @media (max-width:768px) {
     .persona-grid { grid-template-columns:1fr; }
@@ -556,6 +569,28 @@
         <li onclick="toggleAsked(this)">"How often does that show up?"</li>
         <li onclick="toggleAsked(this)">"Who owned the fire drill?"</li>
       </ul>
+
+      <div id="painBlocks">
+        <div class="pain-block" data-pain="1">
+          <h4>Pain 1</h4>
+          <div class="pain-field"><label>What happened</label><input type="text" placeholder="Specific situation..." class="pain-input" data-field="what"></div>
+          <div class="pain-field"><label>How often</label><input type="text" placeholder="Daily / weekly / per release..." class="pain-input" data-field="frequency"></div>
+          <div class="pain-field"><label>Impact</label><input type="text" placeholder="Time lost, incidents, $, blocked launches..." class="pain-input" data-field="impact"></div>
+          <div class="pain-field">
+            <label>Who felt it</label>
+            <div class="who-tags">
+              <span class="who-tag" onclick="this.classList.toggle('selected')">Dev</span>
+              <span class="who-tag" onclick="this.classList.toggle('selected')">QA</span>
+              <span class="who-tag" onclick="this.classList.toggle('selected')">Platform</span>
+              <span class="who-tag" onclick="this.classList.toggle('selected')">Leadership</span>
+              <span class="who-tag" onclick="this.classList.toggle('selected')">Consumers</span>
+            </div>
+          </div>
+          <div class="pain-field"><label>Demo fix</label><input type="text" placeholder="Which demo moment addresses this pain?" class="pain-input" data-field="demo"></div>
+        </div>
+      </div>
+      <button class="add-pain-btn" onclick="addPainBlock()">+ Add another pain</button>
+
       <hr class="section-divider">
       <h3>Metrics Capture</h3>
       <div id="metricsSection"></div>
@@ -1181,6 +1216,50 @@ function collectQResponses() {
   return responses;
 }
 
+// ===== PAIN BLOCKS =====
+let painCount = 1;
+function addPainBlock() {
+  painCount++;
+  const container = document.getElementById('painBlocks');
+  const block = document.createElement('div');
+  block.className = 'pain-block';
+  block.dataset.pain = painCount;
+  block.innerHTML = `
+    <h4>Pain ${painCount}</h4>
+    <div class="pain-field"><label>What happened</label><input type="text" placeholder="Specific situation..." class="pain-input" data-field="what"></div>
+    <div class="pain-field"><label>How often</label><input type="text" placeholder="Daily / weekly / per release..." class="pain-input" data-field="frequency"></div>
+    <div class="pain-field"><label>Impact</label><input type="text" placeholder="Time lost, incidents, $, blocked launches..." class="pain-input" data-field="impact"></div>
+    <div class="pain-field">
+      <label>Who felt it</label>
+      <div class="who-tags">
+        <span class="who-tag" onclick="this.classList.toggle('selected')">Dev</span>
+        <span class="who-tag" onclick="this.classList.toggle('selected')">QA</span>
+        <span class="who-tag" onclick="this.classList.toggle('selected')">Platform</span>
+        <span class="who-tag" onclick="this.classList.toggle('selected')">Leadership</span>
+        <span class="who-tag" onclick="this.classList.toggle('selected')">Consumers</span>
+      </div>
+    </div>
+    <div class="pain-field"><label>Demo fix</label><input type="text" placeholder="Which demo moment addresses this pain?" class="pain-input" data-field="demo"></div>
+  `;
+  container.appendChild(block);
+}
+
+function collectPains() {
+  const pains = [];
+  document.querySelectorAll('.pain-block').forEach(block => {
+    const pain = {};
+    pain.number = block.dataset.pain;
+    block.querySelectorAll('.pain-input').forEach(input => {
+      if (input.value.trim()) pain[input.dataset.field] = input.value.trim();
+    });
+    const who = [];
+    block.querySelectorAll('.who-tag.selected').forEach(tag => who.push(tag.textContent));
+    if (who.length > 0) pain.who = who.join(', ');
+    if (Object.keys(pain).length > 1) pains.push(pain); // has more than just number
+  });
+  return pains;
+}
+
 // Patch export to include responses
 const _origExport = exportNotes;
 exportNotes = function() {
@@ -1196,6 +1275,21 @@ exportNotes = function() {
     out += 'QUESTIONS & RESPONSES:\n';
     responses.forEach(r => {
       out += `\n  Q: ${r.question}\n  A: ${r.response}\n`;
+    });
+    out += '\n';
+  }
+
+  // Pains
+  const pains = collectPains();
+  if (pains.length > 0) {
+    out += 'PAIN CAPTURE:\n';
+    pains.forEach(p => {
+      out += `\n  Pain ${p.number}:\n`;
+      if (p.what) out += `    What happened: ${p.what}\n`;
+      if (p.frequency) out += `    Frequency: ${p.frequency}\n`;
+      if (p.impact) out += `    Impact: ${p.impact}\n`;
+      if (p.who) out += `    Who felt it: ${p.who}\n`;
+      if (p.demo) out += `    Demo fix: ${p.demo}\n`;
     });
     out += '\n';
   }
@@ -1243,16 +1337,37 @@ exportNotes = function() {
 const _origBuildSummary = buildSummary;
 buildSummary = function() {
   _origBuildSummary();
+  const container = document.getElementById('summaryContent');
+  let prepend = '';
+
+  // Pain capture in summary
+  const pains = collectPains();
+  if (pains.length > 0) {
+    prepend += '<div class="summary-section"><h4>Pain Capture</h4>';
+    pains.forEach(p => {
+      prepend += '<div style="padding:8px 0; font-size:13px; border-bottom:1px solid #f0f0f0">';
+      prepend += `<strong>Pain ${p.number}</strong><br>`;
+      if (p.what) prepend += `What happened: ${p.what}<br>`;
+      if (p.frequency) prepend += `Frequency: ${p.frequency}<br>`;
+      if (p.impact) prepend += `Impact: ${p.impact}<br>`;
+      if (p.who) prepend += `Who felt it: ${p.who}<br>`;
+      if (p.demo) prepend += `Demo fix: ${p.demo}`;
+      prepend += '</div>';
+    });
+    prepend += '</div>';
+  }
+
+  // Q&A in summary
   const responses = collectQResponses();
   if (responses.length > 0) {
-    const container = document.getElementById('summaryContent');
-    let html = '<div class="summary-section"><h4>Questions & Responses (' + responses.length + ')</h4>';
+    prepend += '<div class="summary-section"><h4>Questions & Responses (' + responses.length + ')</h4>';
     responses.forEach(r => {
-      html += `<div style="padding:6px 0; font-size:13px; border-bottom:1px solid #f0f0f0"><strong>Q:</strong> ${r.question}<br><strong>A:</strong> ${r.response}</div>`;
+      prepend += `<div style="padding:6px 0; font-size:13px; border-bottom:1px solid #f0f0f0"><strong>Q:</strong> ${r.question}<br><strong>A:</strong> ${r.response}</div>`;
     });
-    html += '</div>';
-    container.innerHTML = html + container.innerHTML;
+    prepend += '</div>';
   }
+
+  if (prepend) container.innerHTML = prepend + container.innerHTML;
 };
 </script>
 </body>
