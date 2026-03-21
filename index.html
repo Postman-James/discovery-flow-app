@@ -174,6 +174,29 @@
   .remove-pain-btn { background:none; border:none; font-size:11px; color:var(--pm-red); cursor:pointer; float:right; padding:2px 6px; border-radius:4px; opacity:0.6; }
   .remove-pain-btn:hover { opacity:1; background:#FFF0F0; }
 
+  /* Chaos auto-suggest */
+  .response-tags { display:flex; flex-wrap:wrap; gap:4px; margin:6px 0 10px; }
+  .response-tag { padding:4px 10px; border-radius:12px; font-size:11px; cursor:pointer; border:1px solid var(--border); background:white; color:var(--text-light); transition:all 0.15s; }
+  .response-tag:hover { border-color:var(--pm-orange); color:var(--pm-orange); }
+  .response-tag.selected { background:var(--pm-orange); color:white; border-color:var(--pm-orange); }
+  .chaos-recommend { background:#FFF8F5; border:1px solid var(--pm-orange); border-radius:10px; padding:12px 16px; margin:14px 0; display:none; }
+  .chaos-recommend.visible { display:block; }
+  .chaos-recommend h4 { font-size:12px; color:var(--pm-orange); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; }
+  .chaos-bar { display:flex; align-items:center; gap:8px; margin:4px 0; font-size:12px; }
+  .chaos-bar-label { min-width:120px; font-weight:600; color:var(--pm-dark); }
+  .chaos-bar-track { flex:1; height:8px; background:#E0E0E0; border-radius:4px; overflow:hidden; }
+  .chaos-bar-fill { height:100%; border-radius:4px; transition:width 0.3s; }
+  .chaos-bar-fill.discovery { background:#3498DB; }
+  .chaos-bar-fill.execution { background:#E74C3C; }
+  .chaos-bar-fill.agent { background:#9B59B6; }
+  .chaos-bar-fill.fragmentation { background:#F39C12; }
+  .chaos-bar-score { font-size:11px; color:var(--text-light); min-width:50px; }
+  .hint-text { font-size:11px; color:var(--text-light); font-style:italic; margin:2px 0 8px; display:none; }
+  .hint-mode .hint-text { display:block; }
+  .hint-mode .response-tags { display:none; }
+  .hint-mode .chaos-recommend { display:none !important; }
+  .suggest-toggle { font-size:11px; color:var(--pm-orange); cursor:pointer; text-decoration:underline; margin-left:8px; }
+
   .hidden { display:none; }
   @media (max-width:768px) {
     .persona-grid { grid-template-columns:1fr; }
@@ -410,14 +433,89 @@
     <div class="card">
       <div class="card-header"><h2>Identify the Chaos Type</h2><span class="badge badge-chaos">8-10 min</span></div>
       <p style="margin-bottom:10px; color:var(--text-light); font-size:13px">Use anchor questions to find the chaos. Select what you hear.</p>
-      <h3>5 Anchor Questions</h3>
-      <ul class="follow-ups">
-        <li onclick="toggleAsked(this)">"How do teams discover internal APIs today?"</li>
-        <li onclick="toggleAsked(this)">"When someone needs to integrate with another team's API, what does day one look like -- and what usually slows them down?"</li>
-        <li onclick="toggleAsked(this)">"When an API ships or changes, how do docs, specs, tests, and what's actually running stay in sync?"</li>
-        <li onclick="toggleAsked(this)">"Are humans, agents, or both expected to consume these interfaces?"</li>
-        <li onclick="toggleAsked(this)">"What would improve if finding, validating, and operating against those APIs got a lot easier?"</li>
-      </ul>
+      <div style="display:flex; align-items:center;">
+        <h3>5 Anchor Questions</h3>
+        <span class="suggest-toggle" id="suggestToggle" onclick="toggleSuggestMode()">switch to hint mode</span>
+      </div>
+
+      <div id="anchorQuestionsBlock">
+        <div class="anchor-q">
+          <ul class="follow-ups">
+            <li onclick="toggleAsked(this)">"How do teams discover internal APIs today?"</li>
+          </ul>
+          <div class="hint-text">Discovery/Reuse: "no central place", "ask in Slack". Fragmentation: "wiki but outdated".</div>
+          <div class="response-tags">
+            <span class="response-tag" onclick="tagResponse(this)" data-chaos="discovery:2">"No central place"</span>
+            <span class="response-tag" onclick="tagResponse(this)" data-chaos="discovery:2">"Ask in Slack"</span>
+            <span class="response-tag" onclick="tagResponse(this)" data-chaos="discovery:1,fragmentation:1">"Wiki but nobody trusts it"</span>
+            <span class="response-tag" onclick="tagResponse(this)" data-chaos="execution:1">"Portal exists but data is stale"</span>
+            <span class="response-tag" onclick="tagResponse(this)" data-chaos="">"Portal everyone uses" (weak)</span>
+          </div>
+        </div>
+
+        <div class="anchor-q">
+          <ul class="follow-ups">
+            <li onclick="toggleAsked(this)">"When someone needs to integrate with another team's API, what does day one look like?"</li>
+          </ul>
+          <div class="hint-text">Execution/Quality: "docs were wrong", "found out in prod". Discovery/Reuse: "had to ask around".</div>
+          <div class="response-tags">
+            <span class="response-tag" onclick="tagResponse(this)" data-chaos="discovery:1">"Had to ask around / Slack someone"</span>
+            <span class="response-tag" onclick="tagResponse(this)" data-chaos="execution:2">"Docs were wrong after we built to them"</span>
+            <span class="response-tag" onclick="tagResponse(this)" data-chaos="execution:1">"Ownership unclear / stale"</span>
+            <span class="response-tag" onclick="tagResponse(this)" data-chaos="execution:2">"Found out in prod"</span>
+            <span class="response-tag" onclick="tagResponse(this)" data-chaos="fragmentation:1">"Different answers from repo vs staging"</span>
+          </div>
+        </div>
+
+        <div class="anchor-q">
+          <ul class="follow-ups">
+            <li onclick="toggleAsked(this)">"When an API ships or changes, how do docs, specs, tests stay in sync?"</li>
+          </ul>
+          <div class="hint-text">Fragmentation: "they don't", "spec drifts from code". Execution/Quality: "catch it in QA or prod".</div>
+          <div class="response-tags">
+            <span class="response-tag" onclick="tagResponse(this)" data-chaos="fragmentation:2">"They don't" / "Spec drifts from code"</span>
+            <span class="response-tag" onclick="tagResponse(this)" data-chaos="fragmentation:1">"Manual process, things lag"</span>
+            <span class="response-tag" onclick="tagResponse(this)" data-chaos="execution:1,fragmentation:1">"Catch it in QA or prod"</span>
+            <span class="response-tag" onclick="tagResponse(this)" data-chaos="fragmentation:1">"Two different stories depending where you look"</span>
+            <span class="response-tag" onclick="tagResponse(this)" data-chaos="">"Stays aligned" (weak)</span>
+          </div>
+        </div>
+
+        <div class="anchor-q">
+          <ul class="follow-ups">
+            <li onclick="toggleAsked(this)">"Are humans, agents, or both expected to consume these interfaces?"</li>
+          </ul>
+          <div class="hint-text">Agent/Tool: "agents but no tool layer", "want to use Cursor but need API context".</div>
+          <div class="response-tags">
+            <span class="response-tag" onclick="tagResponse(this)" data-chaos="agent:2">"Agents but no clean tool layer"</span>
+            <span class="response-tag" onclick="tagResponse(this)" data-chaos="agent:1">"Exploring AI / agent workflows"</span>
+            <span class="response-tag" onclick="tagResponse(this)" data-chaos="agent:1">"Stay in Cursor but need API context"</span>
+            <span class="response-tag" onclick="tagResponse(this)" data-chaos="">"Humans only, no agent plans"</span>
+          </div>
+        </div>
+
+        <div class="anchor-q">
+          <ul class="follow-ups">
+            <li onclick="toggleAsked(this)">"What would improve if finding, validating, and operating against APIs got easier?"</li>
+          </ul>
+          <div class="hint-text">Maps to whatever they emphasize: "finding" = Discovery, "validating" = Execution, "operating" = Fragmentation.</div>
+          <div class="response-tags">
+            <span class="response-tag" onclick="tagResponse(this)" data-chaos="discovery:1">"Faster onboarding / less duplicate work"</span>
+            <span class="response-tag" onclick="tagResponse(this)" data-chaos="execution:1">"Fewer production incidents"</span>
+            <span class="response-tag" onclick="tagResponse(this)" data-chaos="fragmentation:1">"One source of truth"</span>
+            <span class="response-tag" onclick="tagResponse(this)" data-chaos="agent:1">"Safer agent/tool rollout"</span>
+            <span class="response-tag" onclick="tagResponse(this)" data-chaos="discovery:1">"Better visibility for leadership"</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chaos-recommend" id="chaosRecommend">
+        <h4>Suggested Chaos Type(s)</h4>
+        <div class="chaos-bar"><span class="chaos-bar-label">Discovery / Reuse</span><div class="chaos-bar-track"><div class="chaos-bar-fill discovery" id="bar-discovery" style="width:0%"></div></div><span class="chaos-bar-score" id="score-discovery">0</span></div>
+        <div class="chaos-bar"><span class="chaos-bar-label">Execution / Quality</span><div class="chaos-bar-track"><div class="chaos-bar-fill execution" id="bar-execution" style="width:0%"></div></div><span class="chaos-bar-score" id="score-execution">0</span></div>
+        <div class="chaos-bar"><span class="chaos-bar-label">Agent / Tool</span><div class="chaos-bar-track"><div class="chaos-bar-fill agent" id="bar-agent" style="width:0%"></div></div><span class="chaos-bar-score" id="score-agent">0</span></div>
+        <div class="chaos-bar"><span class="chaos-bar-label">Fragmentation</span><div class="chaos-bar-track"><div class="chaos-bar-fill fragmentation" id="bar-fragmentation" style="width:0%"></div></div><span class="chaos-bar-score" id="score-fragmentation">0</span></div>
+      </div>
       <div id="chaosSection">
         <hr class="section-divider">
         <h3>Select Chaos Type(s)</h3>
@@ -1425,6 +1523,85 @@ function toggleQ(el) {
   toggleAsked(item);
 }
 function toggleSignal(el) { el.classList.toggle('selected'); }
+// ===== CHAOS AUTO-SUGGEST =====
+let chaosScores = {discovery:0, execution:0, agent:0, fragmentation:0};
+let suggestMode = 'auto'; // 'auto' or 'hint'
+
+function tagResponse(el) {
+  el.classList.toggle('selected');
+  recalcChaosScores();
+}
+
+function recalcChaosScores() {
+  chaosScores = {discovery:0, execution:0, agent:0, fragmentation:0};
+  document.querySelectorAll('.response-tag.selected').forEach(tag => {
+    const mapping = tag.dataset.chaos;
+    if (!mapping) return;
+    mapping.split(',').forEach(pair => {
+      const [type, weight] = pair.split(':');
+      if (type && chaosScores.hasOwnProperty(type)) {
+        chaosScores[type] += parseInt(weight) || 1;
+      }
+    });
+  });
+  updateChaosRecommendation();
+}
+
+function updateChaosRecommendation() {
+  const maxScore = Math.max(...Object.values(chaosScores), 1);
+  const hasAny = Object.values(chaosScores).some(v => v > 0);
+  const panel = document.getElementById('chaosRecommend');
+
+  if (hasAny && suggestMode === 'auto') {
+    panel.classList.add('visible');
+  } else {
+    panel.classList.remove('visible');
+  }
+
+  ['discovery','execution','agent','fragmentation'].forEach(type => {
+    const score = chaosScores[type];
+    const pct = maxScore > 0 ? (score / maxScore) * 100 : 0;
+    document.getElementById('bar-' + type).style.width = pct + '%';
+    const label = score === 0 ? '-' : score >= 4 ? 'strong' : score >= 2 ? 'moderate' : 'weak';
+    document.getElementById('score-' + type).textContent = score > 0 ? label : '-';
+  });
+
+  // Auto-highlight chaos cards based on scores
+  document.querySelectorAll('#chaosSection .chaos-card').forEach(card => {
+    // Remove auto-suggest glow
+    card.style.boxShadow = '';
+  });
+
+  if (hasAny) {
+    const threshold = maxScore * 0.5;
+    const chaosTypes = ['discovery','execution','agent','fragmentation'];
+    chaosTypes.forEach((type, i) => {
+      if (chaosScores[type] >= threshold && chaosScores[type] > 0) {
+        const card = document.querySelectorAll('#chaosSection .chaos-card')[i];
+        if (card && !card.classList.contains('selected')) {
+          card.style.boxShadow = '0 0 0 3px rgba(255,108,55,0.3)';
+        }
+      }
+    });
+  }
+}
+
+function toggleSuggestMode() {
+  const block = document.getElementById('anchorQuestionsBlock');
+  const toggle = document.getElementById('suggestToggle');
+  if (suggestMode === 'auto') {
+    suggestMode = 'hint';
+    block.classList.add('hint-mode');
+    toggle.textContent = 'switch to auto-suggest mode';
+    document.getElementById('chaosRecommend').classList.remove('visible');
+  } else {
+    suggestMode = 'auto';
+    block.classList.remove('hint-mode');
+    toggle.textContent = 'switch to hint mode';
+    recalcChaosScores();
+  }
+}
+
 function toggleChaos(el, type) { el.classList.toggle('selected'); selectedChaos.has(type) ? selectedChaos.delete(type) : selectedChaos.add(type); }
 let selectedPatterns = new Set();
 function togglePattern(el, type) {
