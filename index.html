@@ -382,16 +382,18 @@
         <li onclick="toggleAsked(this)">"Are humans, agents, or both expected to consume these interfaces?"</li>
         <li onclick="toggleAsked(this)">"What would improve if finding, validating, and operating against those APIs got a lot easier?"</li>
       </ul>
-      <hr class="section-divider">
-      <h3>Select Chaos Type(s)</h3>
-      <div class="chaos-selector">
-        <div class="chaos-card" onclick="toggleChaos(this,'discovery')"><div class="chaos-icon">🔍</div><h4>Discovery / Reuse</h4><p>Can't find, trust, or reuse internal APIs</p></div>
-        <div class="chaos-card" onclick="toggleChaos(this,'execution')"><div class="chaos-icon">⚡</div><h4>Execution / Quality</h4><p>Don't know if APIs work or who owns them</p></div>
-        <div class="chaos-card" onclick="toggleChaos(this,'agent')"><div class="chaos-icon">🤖</div><h4>Agent / Tool</h4><p>No trusted interface layer for agents</p></div>
-        <div class="chaos-card" onclick="toggleChaos(this,'fragmentation')"><div class="chaos-icon">🔀</div><h4>Workflow Fragmentation</h4><p>Truth scattered across code, docs, tests, CI</p></div>
+      <div id="chaosSection">
+        <hr class="section-divider">
+        <h3>Select Chaos Type(s)</h3>
+        <div class="chaos-selector">
+          <div class="chaos-card" onclick="toggleChaos(this,'discovery')"><div class="chaos-icon">🔍</div><h4>Discovery / Reuse</h4><p>Can't find, trust, or reuse internal APIs</p></div>
+          <div class="chaos-card" onclick="toggleChaos(this,'execution')"><div class="chaos-icon">⚡</div><h4>Execution / Quality</h4><p>Don't know if APIs work or who owns them</p></div>
+          <div class="chaos-card" onclick="toggleChaos(this,'agent')"><div class="chaos-icon">🤖</div><h4>Agent / Tool</h4><p>No trusted interface layer for agents</p></div>
+          <div class="chaos-card" onclick="toggleChaos(this,'fragmentation')"><div class="chaos-icon">🔀</div><h4>Workflow Fragmentation</h4><p>Truth scattered across code, docs, tests, CI</p></div>
+        </div>
+        <h3 style="margin-top:14px">Notes</h3>
+        <textarea class="notes-area" id="notes-chaos" placeholder="Chaos signals, key quotes..."></textarea>
       </div>
-      <h3 style="margin-top:14px">Notes</h3>
-      <textarea class="notes-area" id="notes-chaos" placeholder="Chaos signals, key quotes..."></textarea>
 
       <!-- Tiger Team: Collaboration Pattern Selector (hidden by default) -->
       <div id="tigerPatternSection" class="hidden">
@@ -1161,8 +1163,9 @@ function selectPersona(key) {
   injectObjections(p);
 
   if (key === 'tiger') {
-    // Hide chaos selector and chaos-type question cards for tiger flow
-    document.querySelectorAll('.chaos-selector:not(#patternSelector), .chaos-questions').forEach(el => el.style.display = 'none');
+    // Hide entire chaos section and chaos-type question cards for tiger flow
+    document.getElementById('chaosSection').style.display = 'none';
+    document.querySelectorAll('.chaos-questions').forEach(el => el.style.display = 'none');
     // Show collaboration pattern selector
     document.getElementById('tigerPatternSection').classList.remove('hidden');
     // Update Phase 2 header and description for tiger
