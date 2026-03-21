@@ -1168,10 +1168,17 @@ function selectPersona(key) {
     document.querySelectorAll('.chaos-questions').forEach(el => el.style.display = 'none');
     // Show collaboration pattern selector
     document.getElementById('tigerPatternSection').classList.remove('hidden');
+    // Rename phase tab from "Chaos ID" to "Pattern ID"
+    document.querySelector('.phase-tab[data-phase="2"]').innerHTML = '3. Pattern ID <span class="time-hint">8-10m</span>';
+    // Rename "Next: Identify Chaos" button in Phase 1
+    const broadNextBtn = document.querySelector('#phase-1 .btn-orange');
+    if (broadNextBtn) broadNextBtn.textContent = 'Next: Identify Pattern';
+    // Update Phase 3 description
+    document.querySelector('#phase-3 .card p').textContent = 'Pattern-specific and persona questions. Click to mark as asked.';
     // Update Phase 2 header and description for tiger
     document.querySelector('#phase-2 .card h2').textContent = 'Identify Collaboration Pattern';
     document.querySelector('#phase-2 .card .badge').textContent = '8-10 min';
-    document.querySelector('#phase-2 .card p').textContent = 'Use the anchor questions to understand how they coordinate API work. Then select the collaboration pattern(s) you hear. This filters your Deep Dive.';
+    document.querySelector('#phase-2 .card p').textContent = 'Use the pattern discovery questions to understand how they coordinate API work. Then select the collaboration pattern(s) you hear. This filters your Deep Dive.';
     // Update Phase 2 anchor questions for tiger (replace chaos-focused with collaboration-focused)
     document.querySelector('#phase-2 .card h3').textContent = '5 Pattern Discovery Questions';
     const anchorList = document.querySelector('#phase-2 .card .follow-ups');
