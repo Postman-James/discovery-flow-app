@@ -134,8 +134,15 @@
 
   .section-divider { border:none; border-top:1px solid var(--border); margin:14px 0; }
   .postman-fit { display:inline-block; background:#FFF3E0; color:var(--pm-orange-dark); padding:3px 9px; border-radius:6px; font-size:11px; font-weight:600; margin-top:6px; }
-  .star-question { background:linear-gradient(135deg,#FFF8F5,#FFF3E0); border:2px solid var(--pm-orange); padding:14px; border-radius:10px; margin:10px 0; font-size:13px; }
+  .star-question { background:linear-gradient(135deg,#FFF8F5,#FFF3E0); border:2px solid var(--pm-orange); padding:14px; border-radius:10px; margin:10px 0; font-size:13px; cursor:pointer; transition:all 0.15s; overflow:hidden; }
+  .star-question:hover { border-color:var(--pm-orange-dark); }
   .star-question::before { content:'STAR QUESTION'; display:block; font-size:9px; font-weight:700; letter-spacing:1px; color:var(--pm-orange); margin-bottom:4px; }
+  .star-question.asked { border-color:var(--pm-green); background:linear-gradient(135deg,#F0FFF4,#E8F5E9); }
+  .star-question.asked::before { color:var(--pm-green); content:'STAR QUESTION (asked)'; }
+  .star-question .star-response { display:none; margin-top:8px; }
+  .star-question.asked .star-response { display:block; }
+  .star-question .star-response input { width:100%; padding:6px 10px; border:1px solid var(--border); border-radius:6px; font-size:12px; font-family:inherit; background:white; }
+  .star-question .star-response input:focus { outline:none; border-color:var(--pm-orange); box-shadow:0 0 0 2px rgba(255,108,55,0.1); }
 
   /* Closing */
   .closing-question { display:flex; align-items:flex-start; gap:8px; padding:8px 10px; margin:4px 0; border-radius:8px; cursor:pointer; transition:all 0.15s; border:1px solid transparent; font-size:13px; }
@@ -561,7 +568,7 @@
     <div class="card chaos-questions" data-for="discovery">
       <div class="card-header"><h2>🔍 Discovery / Reuse</h2><span class="postman-fit">API Catalog + PAN</span></div>
 
-      <div class="star-question"><strong>"How do developers discover the right internal API or service today?"</strong></div>
+      <div class="star-question" onclick="toggleStar(this)"><strong>"How do developers discover the right internal API or service today?"</strong><div class="star-response"><input type="text" placeholder="Their response..." onclick="event.stopPropagation()"></div></div>
       <ul class="follow-ups">
         <li onclick="toggleAsked(this)">"If I joined a new team tomorrow, where would I look first?"</li>
         <li onclick="toggleAsked(this)">"Would I find approved APIs in one place, or piecing it together from repos, docs, Slack?"</li>
@@ -574,7 +581,7 @@
       </div>
 
       <hr class="section-divider">
-      <div class="star-question"><strong>"How do you know whether an API is actually ready for broader internal use?"</strong></div>
+      <div class="star-question" onclick="toggleStar(this)"><strong>"How do you know whether an API is actually ready for broader internal use?"</strong><div class="star-response"><input type="text" placeholder="Their response..." onclick="event.stopPropagation()"></div></div>
       <ul class="follow-ups">
         <li onclick="toggleAsked(this)">"Is there a readiness checklist?"</li>
         <li onclick="toggleAsked(this)">"Who decides an API is ready to be published internally?"</li>
@@ -586,7 +593,7 @@
       </div>
 
       <hr class="section-divider">
-      <div class="star-question"><strong>"How are internal APIs made available to non-owning teams?"</strong></div>
+      <div class="star-question" onclick="toggleStar(this)"><strong>"How are internal APIs made available to non-owning teams?"</strong><div class="star-response"><input type="text" placeholder="Their response..." onclick="event.stopPropagation()"></div></div>
       <ul class="follow-ups">
         <li onclick="toggleAsked(this)">"Is there a formal publishing/distribution model?"</li>
         <li onclick="toggleAsked(this)">"Do consumers get examples and runnable assets, or only docs?"</li>
@@ -603,7 +610,7 @@
     <div class="card chaos-questions" data-for="execution">
       <div class="card-header"><h2>⚡ Execution / Quality</h2><span class="postman-fit">Health + CI/CD + Ownership</span></div>
 
-      <div class="star-question"><strong>"Walk me through what happens when a developer needs to call an API owned by another team."</strong></div>
+      <div class="star-question" onclick="toggleStar(this)"><strong>"Walk me through what happens when a developer needs to call an API owned by another team."</strong><div class="star-response"><input type="text" placeholder="Their response..." onclick="event.stopPropagation()"></div></div>
       <ul class="follow-ups">
         <li onclick="toggleAsked(this)">"What's the first thing they do -- Slack, portal, clone a repo?"</li>
         <li onclick="toggleAsked(this)">"If the first request fails, how do they figure out if it's their usage, the contract, or the service?"</li>
@@ -618,7 +625,7 @@
       </div>
 
       <hr class="section-divider">
-      <div class="star-question"><strong>"What usually breaks between building an API and another team consuming it?"</strong></div>
+      <div class="star-question" onclick="toggleStar(this)"><strong>"What usually breaks between building an API and another team consuming it?"</strong><div class="star-response"><input type="text" placeholder="Their response..." onclick="event.stopPropagation()"></div></div>
       <ul class="follow-ups">
         <li onclick="toggleAsked(this)">"Where do handoffs fail most often?"</li>
         <li onclick="toggleAsked(this)">"What creates the most support burden for the API-owning team?"</li>
@@ -630,7 +637,7 @@
       </div>
 
       <hr class="section-divider">
-      <div class="star-question"><strong>"When something fails in production, how fast can the consuming team tell if it's the contract, implementation, environment, or their usage?"</strong></div>
+      <div class="star-question" onclick="toggleStar(this)"><strong>"When something fails in production, how fast can the consuming team tell if it's the contract, implementation, environment, or their usage?"</strong><div class="star-response"><input type="text" placeholder="Their response..." onclick="event.stopPropagation()"></div></div>
       <ul class="follow-ups">
         <li onclick="toggleAsked(this)">"One workflow for that, or jump across multiple tools?"</li>
         <li onclick="toggleAsked(this)">"Can they correlate test history with runtime behavior?"</li>
@@ -647,7 +654,7 @@
     <div class="card chaos-questions" data-for="fragmentation">
       <div class="card-header"><h2>🔀 Workflow Fragmentation</h2><span class="postman-fit">Git-connected Catalog</span></div>
 
-      <div class="star-question"><strong>"When an API changes in code, what else has to get updated -- and what usually lags?"</strong></div>
+      <div class="star-question" onclick="toggleStar(this)"><strong>"When an API changes in code, what else has to get updated -- and what usually lags?"</strong><div class="star-response"><input type="text" placeholder="Their response..." onclick="event.stopPropagation()"></div></div>
       <ul class="follow-ups">
         <li onclick="toggleAsked(this)">"Have you seen spec and prod behavior not match? How often?"</li>
         <li onclick="toggleAsked(this)">"If two engineers answered 'what does this endpoint do?' from different sources, would they agree?"</li>
@@ -660,7 +667,7 @@
       </div>
 
       <hr class="section-divider">
-      <div class="star-question"><strong>"Do you have a single system of record for API specs, ownership, and status?"</strong></div>
+      <div class="star-question" onclick="toggleStar(this)"><strong>"Do you have a single system of record for API specs, ownership, and status?"</strong><div class="star-response"><input type="text" placeholder="Their response..." onclick="event.stopPropagation()"></div></div>
       <ul class="follow-ups">
         <li onclick="toggleAsked(this)">"How do you currently detect breaking changes?"</li>
         <li onclick="toggleAsked(this)">"What happens operationally when one is identified?"</li>
@@ -672,7 +679,7 @@
       </div>
 
       <hr class="section-divider">
-      <div class="star-question"><strong>"How do you make sure Git repo code stays in sync with docs and tests?"</strong></div>
+      <div class="star-question" onclick="toggleStar(this)"><strong>"How do you make sure Git repo code stays in sync with docs and tests?"</strong><div class="star-response"><input type="text" placeholder="Their response..." onclick="event.stopPropagation()"></div></div>
       <ul class="follow-ups">
         <li onclick="toggleAsked(this)">"Manual code review or automated in the PR?"</li>
         <li onclick="toggleAsked(this)">"Find out about drift through alerts or customer reports?"</li>
@@ -689,7 +696,7 @@
     <div class="card chaos-questions" data-for="agent">
       <div class="card-header"><h2>🤖 Agent / Tool</h2><span class="postman-fit">Agent Mode + MCP</span></div>
 
-      <div class="star-question"><strong>"Are agents or AI workflows expected to call internal APIs or tools?"</strong></div>
+      <div class="star-question" onclick="toggleStar(this)"><strong>"Are agents or AI workflows expected to call internal APIs or tools?"</strong><div class="star-response"><input type="text" placeholder="Their response..." onclick="event.stopPropagation()"></div></div>
       <ul class="follow-ups">
         <li onclick="toggleAsked(this)">"Do you need agents to discover tools safely?"</li>
         <li onclick="toggleAsked(this)">"How do you decide which tools are approved for agent use?"</li>
@@ -702,7 +709,7 @@
       </div>
 
       <hr class="section-divider">
-      <div class="star-question"><strong>"Where are developers doing most of their work -- IDE, GitHub, CI, Cursor?"</strong></div>
+      <div class="star-question" onclick="toggleStar(this)"><strong>"Where are developers doing most of their work -- IDE, GitHub, CI, Cursor?"</strong><div class="star-response"><input type="text" placeholder="Their response..." onclick="event.stopPropagation()"></div></div>
       <ul class="follow-ups">
         <li onclick="toggleAsked(this)">"Want to stay in Cursor / VS Code / terminal?"</li>
         <li onclick="toggleAsked(this)">"Would they reject another standalone AI layer?"</li>
@@ -1409,7 +1416,7 @@ function injectDeepDive(p) {
     html += `<div class="card tiger-deep-card"${patternAttr}><div class="card-header"><h2>${p.icon} ${section.title}</h2><span class="postman-fit">${section.fit}</span></div>`;
     section.questions.forEach((q, i) => {
       if (i === 0) {
-        html += `<div class="star-question"><strong>${q}</strong></div><div class="follow-ups">${qItem(q)}</div>`;
+        html += `<div class="star-question" onclick="toggleStar(this)"><strong>${q}</strong><div class="star-response"><input type="text" placeholder="Their response..." onclick="event.stopPropagation()"></div></div>`;
       } else {
         html += `<div class="follow-ups">${qItem(q)}</div>`;
       }
@@ -1521,6 +1528,13 @@ function toggleAsked(el) {
 function toggleQ(el) {
   const item = el.closest('.q-item');
   toggleAsked(item);
+}
+function toggleStar(el) {
+  el.classList.toggle('asked');
+  if (el.classList.contains('asked')) {
+    const input = el.querySelector('.star-response input');
+    if (input) setTimeout(() => input.focus(), 50);
+  }
 }
 function toggleSignal(el) { el.classList.toggle('selected'); }
 // ===== CHAOS AUTO-SUGGEST =====
@@ -1761,10 +1775,17 @@ document.addEventListener('DOMContentLoaded', () => {
 // ===== UPDATE EXPORT TO CAPTURE Q-ITEM RESPONSES =====
 function collectQResponses() {
   const responses = [];
+  // Collect from q-items
   document.querySelectorAll('.q-item.asked').forEach(item => {
     const q = item.querySelector('.q-text span:first-child')?.textContent.trim();
     const r = item.querySelector('.q-response input')?.value.trim();
     if (q) responses.push({question: q, response: r || '(no response captured)'});
+  });
+  // Collect from star-questions
+  document.querySelectorAll('.star-question.asked').forEach(item => {
+    const q = item.querySelector('strong')?.textContent.trim();
+    const r = item.querySelector('.star-response input')?.value.trim();
+    if (q) responses.push({question: '[STAR] ' + q, response: r || '(no response captured)'});
   });
   return responses;
 }
