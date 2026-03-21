@@ -1417,17 +1417,19 @@ function injectDeepDive(p) {
     section.questions.forEach((q, i) => {
       if (i === 0) {
         html += `<div class="star-question" onclick="toggleStar(this)"><strong>${q}</strong><div class="star-response"><input type="text" placeholder="Their response..." onclick="event.stopPropagation()"></div></div>`;
+        // Signals right after star question with label
+        if (section.signals) {
+          html += '<h3 style="margin-top:10px; font-size:12px; color:var(--text-light); text-transform:uppercase; letter-spacing:0.5px;">Listen for (across all questions)</h3>';
+          html += '<div class="signals-grid">';
+          section.signals.forEach(s => {
+            html += `<div class="signal signal-${s.good ? 'good' : 'bad'}" onclick="toggleSignal(this)">${s.text}</div>`;
+          });
+          html += '</div><hr class="section-divider">';
+        }
       } else {
         html += `<div class="follow-ups">${qItem(q)}</div>`;
       }
     });
-    if (section.signals) {
-      html += '<div class="signals-grid">';
-      section.signals.forEach(s => {
-        html += `<div class="signal signal-${s.good ? 'good' : 'bad'}" onclick="toggleSignal(this)">${s.text}</div>`;
-      });
-      html += '</div>';
-    }
     html += '</div>';
   });
   document.getElementById('personaDeepDive').innerHTML = html;
@@ -1769,6 +1771,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const qEl = div.firstElementChild;
       li.parentNode.replaceChild(qEl, li);
     }
+  });
+
+  // Add "Listen for" label above any signals-grid that doesn't already have one
+  document.querySelectorAll('.signals-grid').forEach(grid => {
+    const prev = grid.previousElementSibling;
+    if (prev && prev.tagName === 'H3' && prev.textContent.includes('Listen for')) return; // already labeled
+    const label = document.createElement('h3');
+    label.style.cssText = 'margin-top:8px; font-size:12px; color:#666; text-transform:uppercase; letter-spacing:0.5px;';
+    label.textContent = 'Listen for';
+    grid.parentNode.insertBefore(label, grid);
   });
 });
 
