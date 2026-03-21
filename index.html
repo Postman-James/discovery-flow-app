@@ -985,26 +985,48 @@ const PERSONAS = {
       ]}
     ],
     deepDiveQuestions: [
-      {title: 'Collaboration: Who\'s Involved?', fit: 'Workspaces + PAN + Forks', patterns: ['single','crossteam','platformwide','partner'], questions: [
-        '"When your team builds or changes an API, who else needs to be involved?"',
-        '"How do people outside your team find or try your APIs?"',
+      {title: 'Collab Q1: Who\'s Involved When APIs Change?', fit: 'Workspaces + PAN + Forks', patterns: ['single','crossteam','platformwide','partner'], questions: [
+        '"When your team builds or changes an API, who else needs to be involved?"'
+      ], signals: [
+        {text: '"Mostly just us" / "Just backend and QA" → Single Team', good: true},
+        {text: '"We loop in other teams once they consume it" → Cross-Team', good: true},
+        {text: '"API review board / standards team reviews" → Platform-Wide', good: true},
+        {text: '"We work closely with vendors/clients" → Partner', good: true},
+        {text: '"Depends on the project" → Mixed (1+2)', good: true}
+      ]},
+      {title: 'Collab Q2: How Do Others Find Your APIs?', fit: 'PAN + API Catalog', patterns: ['single','crossteam','platformwide','partner'], questions: [
+        '"How do people outside your team find or try your APIs?"'
+      ], signals: [
+        {text: '"They ping us directly" / "Slack or Confluence" → No discoverability', good: true},
+        {text: '"We have a wiki or internal list" → Early catalog attempt', good: true},
+        {text: '"Internal API portal or registry" → Platform-Wide', good: true},
+        {text: '"Public developer portal" → Partner', good: true},
+        {text: '"Trying to consolidate, not all published" → Transitioning (2→3)', good: true}
+      ]},
+      {title: 'Collab Q3: How Does Feedback Happen?', fit: 'Comments + Forks + PRs', patterns: ['single','crossteam','platformwide','partner'], questions: [
         '"When someone gives feedback or finds an issue, how does that conversation happen?"'
       ], signals: [
-        {text: '"Mostly just us" (Single team)', good: true},
-        {text: '"We loop in other teams" (Cross-team)', good: true},
-        {text: '"API review board / platform team" (Platform-wide)', good: true},
-        {text: '"Partners integrate into their systems" (Partner)', good: true}
+        {text: '"Usually after code is done" / "Slack or email after launch" → Late, untracked', good: true},
+        {text: '"Consumers open Jira tickets or DM us" → Reactive, siloed', good: true},
+        {text: '"Approval workflow or governance checklist" → Platform-Wide, formalized', good: true},
+        {text: '"Partners report through support portal" → Partner', good: true}
       ]},
-      {title: 'Collaboration: Delivery Speed', fit: 'Mocks + Collections + CI/CD', patterns: ['single','crossteam','platformwide','partner'], questions: [
-        '"What\'s the biggest thing that slows down API delivery for you?"',
-        '"How do you make sure everyone\'s using the same version of an API?"'
+      {title: 'Collab Q4: What Slows Down API Delivery?', fit: 'Mocks + Collections + CI/CD', patterns: ['single','crossteam','platformwide','partner'], questions: [
+        '"What\'s the biggest thing that slows down API delivery for you?"'
       ], signals: [
-        {text: '"We wait on backend or QA" / "Docs outdated" (Sequential)', good: true},
-        {text: '"Cross-team dependencies" / "Duplicate APIs" (Fragmented)', good: true},
-        {text: '"Hard to enforce consistency" (Ready for standardization)', good: true},
-        {text: '"Partner onboarding takes too long" (Access/permissions)', good: true},
-        {text: '"Each team does it differently" (Hybrid)', good: true},
-        {text: '"Central catalog, versioned specs" (Governance working)', good: false}
+        {text: '"We wait on backend or QA" / "Docs outdated" → Sequential (Single Team)', good: true},
+        {text: '"Cross-team dependencies" / "Duplicate APIs" / "Too many meetings" → Fragmented (Cross-Team)', good: true},
+        {text: '"Hard to enforce consistency" / "Different standards" → Ready for standardization (Platform)', good: true},
+        {text: '"Partner onboarding takes too long" / "Access control slow" → Partner', good: true}
+      ]},
+      {title: 'Collab Q5: Version & Change Management', fit: 'Git + Catalog + Versioning', patterns: ['single','crossteam','platformwide','partner'], questions: [
+        '"How do you make sure everyone\'s using the same version or latest version of an API?"'
+      ], signals: [
+        {text: '"We don\'t" / "Whatever\'s in the repo" → No governance (Single Team)', good: true},
+        {text: '"Share updates manually or over Slack" / "Consumers often miss changes" → Reactive (Cross-Team)', good: true},
+        {text: '"Central catalog or versioned specs" / "Changes reviewed centrally" → Governance emerging (Platform)', good: false},
+        {text: '"Version control tied to partner contracts" / "API bulletin" → External lifecycle (Partner)', good: true},
+        {text: '"Each team does it differently" → Hybrid', good: true}
       ]},
       {title: 'Test Automation: App-Specific APIs', fit: 'Collections + CLI + Monitors', patterns: ['single','crossteam'], questions: [
         '"How do you validate new endpoints before merging code?"',
@@ -1060,8 +1082,11 @@ const PERSONAS = {
         '"What\'s driving your focus on API security right now?"',
         '"Can you share a recent example that triggered this focus?"',
         '"What is your primary security concern right now?"',
+        '"How does this impact your day-to-day operations or ability to scale?"',
+        '"What are your top security priorities this quarter or year?"',
         '"What happens if this concern isn\'t addressed in the next 6-12 months?"',
-        '"Who owns API security today -- developer responsibility, security function, or both?"'
+        '"How does your team think about API security -- developer responsibility, security function, or both?"',
+        '"Who owns API security today, and who else is involved in decisions?"'
       ], signals: [
         {text: '"Recent incident or audit triggered this"', good: true},
         {text: '"Credentials shared in Slack or repos"', good: true},
@@ -1120,15 +1145,27 @@ const PERSONAS = {
       'Governance standards are consistent across teams',
       'APIs are discoverable in a central catalog',
       'Sprint cycles measurably shorter',
-      'Customer can articulate their maturity level and next steps'
+      'Customer can articulate their maturity level and next steps',
+      'Customer completes API Maturity Assessment and can articulate their level',
+      'Assessment results guide the demo narrative for Call #2'
     ],
     objections: [
       {title: '"We don\'t have time for a full discovery process"', meaning: 'Senior persona, wants value fast. Multiple discovery sessions feel wasteful.', reframe: '"Understood. Let me blend a quick discovery with a targeted demo in this session. I\'ll ask a few questions to make sure what I show you is relevant, then we\'ll jump right in."'},
       {title: '"We can\'t articulate our API pain points"', meaning: 'They know something\'s off but can\'t name it. Common with teams early in API maturity.', reframe: '"That\'s actually really common. Let me share what we see at similar companies -- [peer example]. Does any of that resonate?" Then let them react.'},
       {title: '"We don\'t track hard metrics on APIs"', meaning: 'No baseline to measure improvement. Nick\'s cascading approach: solve collaboration first.', reframe: '"Most teams don\'t yet. That\'s actually one of the first things Postman helps with -- giving you visibility into what\'s happening. Let\'s start with collaboration and work from there."'},
       {title: '"I\'m not the right person for this conversation"', meaning: 'Wrong stakeholder on the call. Need to get to the right audience.', reframe: '"I appreciate your time. Based on what you\'ve shared, it sounds like [persona] would benefit most from seeing this. Would you be open to connecting us? I can send you a quick summary to share with them."'},
-      {title: '"We already have a solution in place"', meaning: 'Incumbent tool. Need to find the gaps.', reframe: '"That\'s great -- what does that solution do well for you? And where do you still end up in Slack or tribal knowledge to get answers?" Let them describe the missing workflow.'}
-    ]
+      {title: '"We already have a solution in place"', meaning: 'Incumbent tool. Need to find the gaps.', reframe: '"That\'s great -- what does that solution do well for you? And where do you still end up in Slack or tribal knowledge to get answers?" Let them describe the missing workflow.'},
+      {title: '"We send collections over email" / "New hires take forever"', meaning: 'Siloed work, manual sharing, slow onboarding. Maps to: Collaborate & Shift Left.', reframe: '"That duplication is exactly what we solve. Postman gives you shared workspaces with always-current collections. New hires fork from the Private API Network and start in minutes, not weeks."'},
+      {title: '"Tests live in multiple tools" / "QA waits on dev"', meaning: 'Manual testing, fragmented CI/CD. Maps to: Drive Testing Automation.', reframe: '"What if QA could start testing before backend is done? Mock servers let teams work in parallel, and the same collections run locally, in CI, and in monitors."'},
+      {title: '"Teams follow different naming conventions" / "APIs break downstream"', meaning: 'Inconsistent quality, drift, compliance gaps. Maps to: Standardize & Govern.', reframe: '"Postman lets you define API standards as executable rules. They run automatically in CI so breaking changes get caught at PR time, not in production."'},
+      {title: '"We don\'t know what APIs exist" / "Everyone rebuilds the same thing"', meaning: 'APIs hard to find and reuse. Maps to: Distribute & Adopt.', reframe: '"The API Catalog gives every team a searchable view of what exists, who owns it, and whether it\'s healthy. No more Slack threads asking where to find an API."'},
+      {title: '"Credentials shared in Slack" / "Security keeps flagging API access"', meaning: 'Unmanaged users, exposed secrets, audit risk. Maps to: Secure & Centralize.', reframe: '"Postman Vault keeps secrets local to each machine or connected to your external vault. Secret Scanner catches any key stored as plain text across every workspace."'}
+    ],
+    closeTalkTrack: {
+      recap: '"Here are the 3 big things that stuck out to me from our conversation. [Summarize their top 3 pains]. Where should we go from here?"',
+      maturityAssessment: '"We have a short API Maturity Assessment that benchmarks where organizations typically are in their API journey. It takes less than 5 minutes. We\'ll send you a summary showing where you\'re strong and where there\'s room to accelerate."',
+      followUpEmail: '"Here\'s our quick API Maturity Assessment. It\'ll benchmark your current API practices across collaboration, testing, governance, observability, and security. Once you complete it, we\'ll review results together and map them to specific Postman capabilities."'
+    }
   }
 };
 
