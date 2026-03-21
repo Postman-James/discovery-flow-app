@@ -2027,6 +2027,22 @@ const DEMO_MAP = {
   }
 };
 
+// Natural pitch descriptions per demo section, sourced from postman.com product pages
+const sectionPitchDescs = {
+  1: "the Private API Network lets your teams easily store, catalog, and collaborate around all your API artifacts on one central platform, so developers can discover and fork what they need in seconds instead of rebuilding from scratch.",
+  2: "Mock Servers let your frontend and backend teams develop in parallel. You can simulate API responses so nobody's blocked waiting on dependencies, and validate behavior before anything hits production.",
+  3: "Workspaces give your teams shared spaces to collaborate on collections, tests, and docs, keeping everyone aligned with one source of truth and role-based access to control who sees what.",
+  4: "Agent Mode is Postman's AI-powered capability that turns natural language into action. It can explore, debug, and build against your APIs, generating tests and docs that are context-aware to your actual endpoints, not generic boilerplate.",
+  5: "AI Documentation auto-generates detailed, accurate docs directly from your endpoint structure and responses, so your documentation stays current without the manual overhead.",
+  6: "Pull Requests bring a code-review workflow to your API artifacts. Your team can view diffs, add comments, approve or decline changes, and merge, just like you would with source code.",
+  7: "the Collection Runner and CLI let you run the same tests locally and in your CI/CD pipeline without duplicating logic. You can validate contracts as a gate before every merge, keeping quality checks fast and seamless.",
+  8: "Performance Testing lets you simulate real-world load with virtual users running requests in parallel, so you can identify bottlenecks and latency issues before they ever impact production.",
+  9: "Monitors run automated checks across every environment on a schedule, so your team knows the moment something breaks. You get alerts via Slack or email and can track SLA compliance over time.",
+  10: "Postman Vault keeps sensitive data like API keys and passwords stored locally with AES-256 encryption, never synced to the cloud. It integrates with 1Password, AWS Secrets Manager, Azure Key Vault, and HashiCorp so your credentials stay secure.",
+  11: "Native Git integration means your specs, collections, and tests live right alongside your code in GitHub, GitLab, Bitbucket, or Azure DevOps. Everything stays in sync with a 1:1 file system mapping, so your developers never leave their preferred tools.",
+  12: "the API Catalog is your command center for understanding exactly what APIs and services exist, how they're connected, how well they're performing, and who owns them. It guarantees your APIs are tested, compliant, and reliable across every environment."
+};
+
 function buildDemoRecommendation() {
   const features = new Map(); // name -> {desc, section, source}
   let talkTracks = [];
@@ -2124,7 +2140,7 @@ function buildDemoRecommendation() {
     pitch += '<ul style="margin:0; padding-left:18px;">';
     bySection.forEach(s => {
       const label = s.names.length > 1 ? `${s.names[0]} + ${s.names.slice(1).join(', ')}` : s.names[0];
-      const value = s.descs[0]; // Use the primary feature's value description
+      const value = sectionPitchDescs[s.section] || s.descs[0]; // Use natural pitch description from product pages
       pitch += `<li style="margin-bottom:6px;"><strong>${label}</strong> &mdash; ${value}</li>`;
     });
     pitch += '</ul>';
@@ -2203,7 +2219,7 @@ function getDemoRecommendationText() {
   out += `  "Based on what you shared around ${sourceList.join(', ')}, I think the best next step would be a hands-on demo tailored to your environment. Here's what I'd walk you through:"\n`;
   bySection.forEach(s => {
     const label = s.names.length > 1 ? `${s.names[0]} + ${s.names.slice(1).join(', ')}` : s.names[0];
-    out += `  - ${label} -- ${s.descs[0]}\n`;
+    out += `  - ${label} -- ${sectionPitchDescs[s.section] || s.descs[0]}\n`;
   });
   out += `  "I can set this up for [next week / a time that works for your team]. I'd keep it focused, around 30-45 minutes, and we can go deep on whichever part matters most to you."\n`;
 
