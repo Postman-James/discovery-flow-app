@@ -551,13 +551,96 @@
         <textarea class="notes-area" id="notes-pattern" placeholder="Collaboration pattern notes, key quotes..."></textarea>
 
         <hr class="section-divider">
-        <h3>Select Discovery Lens(es) to Explore in Deep Dive</h3>
-        <p style="margin-bottom:10px; color:var(--text-light); font-size:12px">Based on what you heard in the broad questions, which areas should you drill into? Select all that apply.</p>
+        <h3>Discovery Lens Questions</h3>
+        <p style="margin-bottom:10px; color:var(--text-light); font-size:12px">Ask these quick questions to decide which lenses to explore in Deep Dive. Click responses you hear, then select/deselect the lens cards below.</p>
+
+        <div style="margin:14px 0;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+            <span style="font-size:18px;">🧪</span>
+            <h4 style="font-size:13px; color:var(--pm-dark);">Test Automation</h4>
+          </div>
+          <ul class="follow-ups">
+            <li onclick="toggleAsked(this)">"How are you testing your APIs today -- manual, automated, or a mix?"</li>
+            <li onclick="toggleAsked(this)">"Are tests part of your CI/CD pipeline or run after merge?"</li>
+          </ul>
+          <div class="response-tags">
+            <span class="response-tag" onclick="tagLens(this)" data-lens="testing" data-strength="strong">"Mostly manual"</span>
+            <span class="response-tag" onclick="tagLens(this)" data-lens="testing" data-strength="strong">"Tests run after merge, not in CI"</span>
+            <span class="response-tag" onclick="tagLens(this)" data-lens="testing" data-strength="moderate">"Mix of manual and automated"</span>
+            <span class="response-tag" onclick="tagLens(this)" data-lens="testing" data-strength="moderate">"QA waits on dev before testing"</span>
+            <span class="response-tag" onclick="tagLens(this)" data-lens="testing" data-strength="weak">"Fully automated in CI/CD" (skip)</span>
+          </div>
+        </div>
+
+        <hr class="section-divider">
+
+        <div style="margin:14px 0;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+            <span style="font-size:18px;">📏</span>
+            <h4 style="font-size:13px; color:var(--pm-dark);">Governance</h4>
+          </div>
+          <ul class="follow-ups">
+            <li onclick="toggleAsked(this)">"Do you have consistent API standards across teams, or does each team do their own thing?"</li>
+            <li onclick="toggleAsked(this)">"Are specs created before or after implementation?"</li>
+          </ul>
+          <div class="response-tags">
+            <span class="response-tag" onclick="tagLens(this)" data-lens="governance" data-strength="strong">"Each team does their own thing"</span>
+            <span class="response-tag" onclick="tagLens(this)" data-lens="governance" data-strength="strong">"No formal standards"</span>
+            <span class="response-tag" onclick="tagLens(this)" data-lens="governance" data-strength="moderate">"Standards exist but not enforced"</span>
+            <span class="response-tag" onclick="tagLens(this)" data-lens="governance" data-strength="moderate">"Specs created after implementation"</span>
+            <span class="response-tag" onclick="tagLens(this)" data-lens="governance" data-strength="weak">"Consistent standards, enforced in CI" (skip)</span>
+          </div>
+        </div>
+
+        <hr class="section-divider">
+
+        <div style="margin:14px 0;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+            <span style="font-size:18px;">🔒</span>
+            <h4 style="font-size:13px; color:var(--pm-dark);">Security</h4>
+          </div>
+          <ul class="follow-ups">
+            <li onclick="toggleAsked(this)">"What's driving your focus on API security right now?"</li>
+            <li onclick="toggleAsked(this)">"Who owns API security today -- dev team, security team, or both?"</li>
+          </ul>
+          <div class="response-tags">
+            <span class="response-tag" onclick="tagLens(this)" data-lens="security" data-strength="strong">"Recent incident or audit triggered this"</span>
+            <span class="response-tag" onclick="tagLens(this)" data-lens="security" data-strength="strong">"Credentials shared in Slack or repos"</span>
+            <span class="response-tag" onclick="tagLens(this)" data-lens="security" data-strength="moderate">"No clear ownership of API security"</span>
+            <span class="response-tag" onclick="tagLens(this)" data-lens="security" data-strength="moderate">"Compliance pressure (SOC2, PCI, HIPAA)"</span>
+            <span class="response-tag" onclick="tagLens(this)" data-lens="security" data-strength="weak">"Strong security posture already" (skip)</span>
+          </div>
+        </div>
+
+        <hr class="section-divider">
+
+        <div style="margin:14px 0;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+            <span style="font-size:18px;">📊</span>
+            <h4 style="font-size:13px; color:var(--pm-dark);">Monitoring</h4>
+          </div>
+          <ul class="follow-ups">
+            <li onclick="toggleAsked(this)">"How do you monitor the health of your APIs?"</li>
+            <li onclick="toggleAsked(this)">"How quickly do you detect issues before customers do?"</li>
+          </ul>
+          <div class="response-tags">
+            <span class="response-tag" onclick="tagLens(this)" data-lens="monitoring" data-strength="strong">"We find out when customers report it"</span>
+            <span class="response-tag" onclick="tagLens(this)" data-lens="monitoring" data-strength="strong">"Monitor infrastructure, not APIs"</span>
+            <span class="response-tag" onclick="tagLens(this)" data-lens="monitoring" data-strength="moderate">"Basic uptime pings only"</span>
+            <span class="response-tag" onclick="tagLens(this)" data-lens="monitoring" data-strength="moderate">"Can't trace failures to specific endpoints"</span>
+            <span class="response-tag" onclick="tagLens(this)" data-lens="monitoring" data-strength="weak">"Comprehensive API monitoring in place" (skip)</span>
+          </div>
+        </div>
+
+        <hr class="section-divider">
+
+        <h3 style="margin-top:14px;">Select Discovery Lens(es) to Explore in Deep Dive</h3>
+        <p style="margin-bottom:10px; color:var(--text-light); font-size:12px">Based on responses above, select which areas to drill into. All start selected -- deselect any you want to skip.</p>
         <div class="chaos-selector" id="lensSelector">
-          <div class="chaos-card selected" onclick="toggleLens(this,'testing')" data-lens="testing"><div class="chaos-icon">🧪</div><h4>Test Automation</h4><p>Where do tests live? Are they automated? What's blocking more automation?</p></div>
-          <div class="chaos-card selected" onclick="toggleLens(this,'governance')" data-lens="governance"><div class="chaos-icon">📏</div><h4>Governance</h4><p>Are standards or reviews in place? What's inconsistent or slowing adoption?</p></div>
-          <div class="chaos-card selected" onclick="toggleLens(this,'security')" data-lens="security"><div class="chaos-icon">🔒</div><h4>Security</h4><p>What problem are they trying to solve? What's their current state?</p></div>
-          <div class="chaos-card selected" onclick="toggleLens(this,'monitoring')" data-lens="monitoring"><div class="chaos-icon">📊</div><h4>Monitoring</h4><p>Where does visibility end? How fast do they detect failures?</p></div>
+          <div class="chaos-card selected" onclick="toggleLens(this,'testing')" data-lens="testing"><div class="chaos-icon">🧪</div><h4>Test Automation</h4><p id="lensHint-testing">All selected by default</p></div>
+          <div class="chaos-card selected" onclick="toggleLens(this,'governance')" data-lens="governance"><div class="chaos-icon">📏</div><h4>Governance</h4><p id="lensHint-governance">All selected by default</p></div>
+          <div class="chaos-card selected" onclick="toggleLens(this,'security')" data-lens="security"><div class="chaos-icon">🔒</div><h4>Security</h4><p id="lensHint-security">All selected by default</p></div>
+          <div class="chaos-card selected" onclick="toggleLens(this,'monitoring')" data-lens="monitoring"><div class="chaos-icon">📊</div><h4>Monitoring</h4><p id="lensHint-monitoring">All selected by default</p></div>
         </div>
       </div>
     </div>
@@ -1705,9 +1788,52 @@ function togglePattern(el, type) {
 }
 
 let selectedLenses = new Set(['testing','governance','security','monitoring']); // all on by default
+let lensTagCounts = {testing: {strong:0, moderate:0, weak:0}, governance: {strong:0, moderate:0, weak:0}, security: {strong:0, moderate:0, weak:0}, monitoring: {strong:0, moderate:0, weak:0}};
+
 function toggleLens(el, lens) {
   el.classList.toggle('selected');
   selectedLenses.has(lens) ? selectedLenses.delete(lens) : selectedLenses.add(lens);
+}
+
+function tagLens(el) {
+  el.classList.toggle('selected');
+  recalcLensScores();
+}
+
+function recalcLensScores() {
+  lensTagCounts = {testing: {strong:0, moderate:0, weak:0}, governance: {strong:0, moderate:0, weak:0}, security: {strong:0, moderate:0, weak:0}, monitoring: {strong:0, moderate:0, weak:0}};
+  document.querySelectorAll('#tigerPatternSection .response-tags .response-tag.selected[data-lens]').forEach(tag => {
+    const lens = tag.dataset.lens;
+    const strength = tag.dataset.strength || 'moderate';
+    if (lensTagCounts[lens]) lensTagCounts[lens][strength]++;
+  });
+
+  // Update lens card hints and auto-glow
+  ['testing','governance','security','monitoring'].forEach(lens => {
+    const counts = lensTagCounts[lens];
+    const hint = document.getElementById('lensHint-' + lens);
+    const card = document.querySelector(`#lensSelector .chaos-card[data-lens="${lens}"]`);
+    if (!hint || !card) return;
+
+    const total = counts.strong + counts.moderate + counts.weak;
+    if (total === 0) {
+      hint.textContent = 'No responses yet';
+      hint.style.color = '';
+      card.style.boxShadow = '';
+    } else if (counts.weak > 0 && counts.strong === 0 && counts.moderate === 0) {
+      hint.textContent = 'Weak pain -- consider skipping';
+      hint.style.color = '#E65100';
+      card.style.boxShadow = '';
+    } else if (counts.strong > 0) {
+      hint.textContent = 'Strong pain -- explore this';
+      hint.style.color = '#2E7D32';
+      card.style.boxShadow = '0 0 0 3px rgba(46,204,113,0.3)';
+    } else {
+      hint.textContent = 'Moderate pain -- worth exploring';
+      hint.style.color = '#F39C12';
+      card.style.boxShadow = '0 0 0 3px rgba(243,156,18,0.3)';
+    }
+  });
 }
 
 function tagPattern(el) {
