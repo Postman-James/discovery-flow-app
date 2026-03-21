@@ -1302,6 +1302,12 @@ function injectSuccessMenu(p) {
     html += `<div class="signal signal-good" onclick="toggleSignal(this)">${s}</div>`;
   });
   html += '</div>';
+  if (p.closeTalkTrack) {
+    html += '<hr class="section-divider"><h3>Close Techniques (Tiger Team)</h3>';
+    html += `<div class="talk-track" onclick="copyText(this)"><strong>Recap (Dan Salvo):</strong> ${p.closeTalkTrack.recap}<span class="copy-hint">click to copy</span></div>`;
+    html += `<div class="talk-track" onclick="copyText(this)"><strong>API Maturity Assessment pitch (min 25-30):</strong> ${p.closeTalkTrack.maturityAssessment}<span class="copy-hint">click to copy</span></div>`;
+    html += `<div class="talk-track" onclick="copyText(this)"><strong>Follow-up email template:</strong> ${p.closeTalkTrack.followUpEmail}<span class="copy-hint">click to copy</span></div>`;
+  }
   document.getElementById('successMenu').innerHTML = html;
 }
 
