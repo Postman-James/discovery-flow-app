@@ -1484,11 +1484,18 @@ function injectDeepDive(p) {
     const patternAttr = section.patterns ? ` data-patterns="${section.patterns.join(',')}"` : '';
     const lensAttr = section.lens ? ` data-lens="${section.lens}"` : '';
     html += `<div class="card tiger-deep-card"${patternAttr}${lensAttr}><div class="card-header"><h2>${p.icon} ${section.title}</h2><span class="postman-fit">${section.fit}</span></div>`;
+    const hasSignals = section.signals && section.signals.length > 0;
     section.questions.forEach((q, i) => {
       if (i === 0) {
-        html += `<div class="star-question" onclick="toggleStar(this)"><strong>${q}</strong><div class="star-response"><input type="text" placeholder="Their response..." onclick="event.stopPropagation()"></div></div>`;
+        if (hasSignals) {
+          // Signals serve as the response capture, no free-text needed
+          html += `<div class="star-question" onclick="toggleStar(this)"><strong>${q}</strong></div>`;
+        } else {
+          // No signals, keep free-text response
+          html += `<div class="star-question" onclick="toggleStar(this)"><strong>${q}</strong><div class="star-response"><input type="text" placeholder="Their response..." onclick="event.stopPropagation()"></div></div>`;
+        }
         // Signals right after star question with label
-        if (section.signals) {
+        if (hasSignals) {
           html += '<h3 style="margin-top:10px; font-size:12px; color:var(--text-light); text-transform:uppercase; letter-spacing:0.5px;">Listen for (across all questions)</h3>';
           html += '<div class="signals-grid">';
           section.signals.forEach(s => {
