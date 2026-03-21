@@ -1359,22 +1359,81 @@ function selectPersona(key) {
     document.querySelector('#phase-2 .card .badge').textContent = '8-10 min';
     document.querySelector('#phase-2 .card p').textContent = 'Use the pattern discovery questions to understand how they coordinate API work. Then select the collaboration pattern(s) you hear. This filters your Deep Dive.';
     // Update Phase 2 anchor questions for tiger (replace chaos-focused with collaboration-focused)
-    document.querySelector('#phase-2 .card h3').textContent = '5 Pattern Discovery Questions';
+    // Replace anchor questions section with tagged pattern discovery questions + recommendation bar
+    const h3 = document.querySelector('#phase-2 .card h3');
+    const suggestToggle = document.getElementById('suggestToggle');
+    if (h3) h3.textContent = '5 Pattern Discovery Questions';
+    if (suggestToggle) suggestToggle.style.display = 'none'; // hide chaos suggest toggle
+
     const anchorList = document.querySelector('#phase-2 .card .follow-ups');
-    anchorList.innerHTML = '';
-    const tigerAnchors = [
-      '"When your team builds or changes an API, who else needs to be involved?"',
-      '"How do people outside your team find or try your APIs?"',
-      '"When someone gives feedback or finds an issue, how does that conversation happen?"',
-      '"What\'s the biggest thing that slows down API delivery for you?"',
-      '"How do you make sure everyone\'s using the same version of an API?"'
-    ];
-    tigerAnchors.forEach(q => {
-      const li = document.createElement('li');
-      li.setAttribute('onclick', 'toggleAsked(this)');
-      li.textContent = q;
-      anchorList.appendChild(li);
-    });
+    if (!anchorList) return;
+    // Replace the entire follow-ups + chaosRecommend area with tiger pattern content
+    const anchorParent = anchorList.parentNode;
+    const chaosRec = document.getElementById('chaosRecommend');
+    if (chaosRec) chaosRec.style.display = 'none';
+
+    // Build tagged questions HTML
+    let tqHtml = '<div id="tigerAnchorBlock">';
+
+    tqHtml += '<div class="anchor-q"><ul class="follow-ups"><li onclick="toggleAsked(this)">"When your team builds or changes an API, who else needs to be involved?"</li></ul>';
+    tqHtml += '<div class="hint-text">Single Team: "mostly just us". Cross-Team: "loop in other teams". Platform-Wide: "review board". Partner: "vendors/clients".</div>';
+    tqHtml += '<div class="response-tags">';
+    tqHtml += '<span class="response-tag" onclick="tagPattern(this)" data-pattern="single:2">"Mostly just us" / "Backend and QA"</span>';
+    tqHtml += '<span class="response-tag" onclick="tagPattern(this)" data-pattern="crossteam:2">"We loop in other teams"</span>';
+    tqHtml += '<span class="response-tag" onclick="tagPattern(this)" data-pattern="platformwide:2">"API review board / standards team"</span>';
+    tqHtml += '<span class="response-tag" onclick="tagPattern(this)" data-pattern="partner:2">"We work with vendors/clients"</span>';
+    tqHtml += '<span class="response-tag" onclick="tagPattern(this)" data-pattern="single:1,crossteam:1">"Depends on the project"</span>';
+    tqHtml += '</div></div>';
+
+    tqHtml += '<div class="anchor-q"><ul class="follow-ups"><li onclick="toggleAsked(this)">"How do people outside your team find or try your APIs?"</li></ul>';
+    tqHtml += '<div class="hint-text">Cross-Team: "ping us directly", "Slack". Platform-Wide: "internal portal". Partner: "developer portal".</div>';
+    tqHtml += '<div class="response-tags">';
+    tqHtml += '<span class="response-tag" onclick="tagPattern(this)" data-pattern="crossteam:2">"They ping us directly" / "Slack or Confluence"</span>';
+    tqHtml += '<span class="response-tag" onclick="tagPattern(this)" data-pattern="crossteam:1">"Wiki or internal list, but not dynamic"</span>';
+    tqHtml += '<span class="response-tag" onclick="tagPattern(this)" data-pattern="platformwide:2">"Internal API portal or registry"</span>';
+    tqHtml += '<span class="response-tag" onclick="tagPattern(this)" data-pattern="partner:2">"Public developer portal"</span>';
+    tqHtml += '<span class="response-tag" onclick="tagPattern(this)" data-pattern="crossteam:1,platformwide:1">"Trying to consolidate, not all published"</span>';
+    tqHtml += '</div></div>';
+
+    tqHtml += '<div class="anchor-q"><ul class="follow-ups"><li onclick="toggleAsked(this)">"When someone gives feedback or finds an issue, how does that conversation happen?"</li></ul>';
+    tqHtml += '<div class="hint-text">Cross-Team: "after code is done", "Slack/email". Platform-Wide: "approval workflow". Partner: "support portal".</div>';
+    tqHtml += '<div class="response-tags">';
+    tqHtml += '<span class="response-tag" onclick="tagPattern(this)" data-pattern="crossteam:2">"Usually after code is done" / "Slack or email"</span>';
+    tqHtml += '<span class="response-tag" onclick="tagPattern(this)" data-pattern="crossteam:1">"Consumers open Jira tickets or DM us"</span>';
+    tqHtml += '<span class="response-tag" onclick="tagPattern(this)" data-pattern="platformwide:2">"Approval workflow or governance checklist"</span>';
+    tqHtml += '<span class="response-tag" onclick="tagPattern(this)" data-pattern="partner:2">"Partners report through support portal"</span>';
+    tqHtml += '</div></div>';
+
+    tqHtml += '<div class="anchor-q"><ul class="follow-ups"><li onclick="toggleAsked(this)">"What\'s the biggest thing that slows down API delivery for you?"</li></ul>';
+    tqHtml += '<div class="hint-text">Single: "wait on backend/QA". Cross-Team: "dependencies, duplicates". Platform: "inconsistent standards". Partner: "onboarding slow".</div>';
+    tqHtml += '<div class="response-tags">';
+    tqHtml += '<span class="response-tag" onclick="tagPattern(this)" data-pattern="single:2">"We wait on backend or QA" / "Docs outdated"</span>';
+    tqHtml += '<span class="response-tag" onclick="tagPattern(this)" data-pattern="crossteam:2">"Cross-team dependencies" / "Duplicate APIs"</span>';
+    tqHtml += '<span class="response-tag" onclick="tagPattern(this)" data-pattern="platformwide:2">"Hard to enforce consistency" / "Different standards"</span>';
+    tqHtml += '<span class="response-tag" onclick="tagPattern(this)" data-pattern="partner:2">"Partner onboarding takes too long"</span>';
+    tqHtml += '</div></div>';
+
+    tqHtml += '<div class="anchor-q"><ul class="follow-ups"><li onclick="toggleAsked(this)">"How do you make sure everyone\'s using the same version of an API?"</li></ul>';
+    tqHtml += '<div class="hint-text">Single: "we don\'t". Cross-Team: "manually over Slack". Platform: "central catalog". Partner: "version contracts".</div>';
+    tqHtml += '<div class="response-tags">';
+    tqHtml += '<span class="response-tag" onclick="tagPattern(this)" data-pattern="single:2">"We don\'t" / "Whatever\'s in the repo"</span>';
+    tqHtml += '<span class="response-tag" onclick="tagPattern(this)" data-pattern="crossteam:2">"Share updates manually over Slack"</span>';
+    tqHtml += '<span class="response-tag" onclick="tagPattern(this)" data-pattern="platformwide:2">"Central catalog or versioned specs"</span>';
+    tqHtml += '<span class="response-tag" onclick="tagPattern(this)" data-pattern="partner:2">"Version control tied to partner contracts"</span>';
+    tqHtml += '<span class="response-tag" onclick="tagPattern(this)" data-pattern="single:1,crossteam:1">"Each team does it differently"</span>';
+    tqHtml += '</div></div>';
+
+    // Pattern recommendation bar
+    tqHtml += '<div class="chaos-recommend" id="patternRecommend">';
+    tqHtml += '<h4 style="color:var(--pm-orange); font-size:12px; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px;">Suggested Collaboration Pattern(s)</h4>';
+    tqHtml += '<div class="chaos-bar"><span class="chaos-bar-label">Single Team</span><div class="chaos-bar-track"><div class="chaos-bar-fill discovery" id="pbar-single" style="width:0%; background:#3498DB;"></div></div><span class="chaos-bar-score" id="pscore-single">-</span></div>';
+    tqHtml += '<div class="chaos-bar"><span class="chaos-bar-label">Cross-Team</span><div class="chaos-bar-track"><div class="chaos-bar-fill execution" id="pbar-crossteam" style="width:0%; background:#E74C3C;"></div></div><span class="chaos-bar-score" id="pscore-crossteam">-</span></div>';
+    tqHtml += '<div class="chaos-bar"><span class="chaos-bar-label">Platform-Wide</span><div class="chaos-bar-track"><div class="chaos-bar-fill agent" id="pbar-platformwide" style="width:0%; background:#9B59B6;"></div></div><span class="chaos-bar-score" id="pscore-platformwide">-</span></div>';
+    tqHtml += '<div class="chaos-bar"><span class="chaos-bar-label">Partner / Project</span><div class="chaos-bar-track"><div class="chaos-bar-fill fragmentation" id="pbar-partner" style="width:0%; background:#F39C12;"></div></div><span class="chaos-bar-score" id="pscore-partner">-</span></div>';
+    tqHtml += '</div>';
+
+    tqHtml += '</div>';
+    anchorList.outerHTML = tqHtml;
   }
 }
 
@@ -1620,9 +1679,71 @@ function toggleSuggestMode() {
 
 function toggleChaos(el, type) { el.classList.toggle('selected'); selectedChaos.has(type) ? selectedChaos.delete(type) : selectedChaos.add(type); }
 let selectedPatterns = new Set();
+let patternScores = {single:0, crossteam:0, platformwide:0, partner:0};
+
 function togglePattern(el, type) {
   el.classList.toggle('selected');
   selectedPatterns.has(type) ? selectedPatterns.delete(type) : selectedPatterns.add(type);
+}
+
+function tagPattern(el) {
+  el.classList.toggle('selected');
+  recalcPatternScores();
+}
+
+function recalcPatternScores() {
+  patternScores = {single:0, crossteam:0, platformwide:0, partner:0};
+  document.querySelectorAll('#tigerAnchorBlock .response-tag.selected').forEach(tag => {
+    const mapping = tag.dataset.pattern;
+    if (!mapping) return;
+    mapping.split(',').forEach(pair => {
+      const [type, weight] = pair.split(':');
+      if (type && patternScores.hasOwnProperty(type)) {
+        patternScores[type] += parseInt(weight) || 1;
+      }
+    });
+  });
+  updatePatternRecommendation();
+}
+
+function updatePatternRecommendation() {
+  const maxScore = Math.max(...Object.values(patternScores), 1);
+  const hasAny = Object.values(patternScores).some(v => v > 0);
+  const panel = document.getElementById('patternRecommend');
+  if (!panel) return;
+
+  if (hasAny) {
+    panel.classList.add('visible');
+  } else {
+    panel.classList.remove('visible');
+  }
+
+  ['single','crossteam','platformwide','partner'].forEach(type => {
+    const score = patternScores[type];
+    const pct = maxScore > 0 ? (score / maxScore) * 100 : 0;
+    const bar = document.getElementById('pbar-' + type);
+    const label = document.getElementById('pscore-' + type);
+    if (bar) bar.style.width = pct + '%';
+    if (label) label.textContent = score > 0 ? (score >= 4 ? 'strong' : score >= 2 ? 'moderate' : 'weak') : '-';
+  });
+
+  // Auto-highlight pattern cards based on scores
+  document.querySelectorAll('#patternSelector .chaos-card').forEach(card => {
+    card.style.boxShadow = '';
+  });
+
+  if (hasAny) {
+    const threshold = maxScore * 0.5;
+    const patternTypes = ['single','crossteam','platformwide','partner'];
+    patternTypes.forEach((type, i) => {
+      if (patternScores[type] >= threshold && patternScores[type] > 0) {
+        const card = document.querySelectorAll('#patternSelector .chaos-card')[i];
+        if (card && !card.classList.contains('selected')) {
+          card.style.boxShadow = '0 0 0 3px rgba(255,108,55,0.3)';
+        }
+      }
+    });
+  }
 }
 function toggleObjection(h) { const b=h.nextElementSibling, s=h.querySelector('span'); b.classList.toggle('open'); s.textContent=b.classList.contains('open')?'−':'+'; }
 function toggleClosing(el) { const cb=el.querySelector('input[type="checkbox"]'); cb.checked=!cb.checked; el.classList.toggle('asked',cb.checked); }
