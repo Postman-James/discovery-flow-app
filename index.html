@@ -1429,7 +1429,7 @@ function injectDeepDive(p) {
 function injectMetrics(p) {
   let html = '';
   p.quantifyMetrics.forEach(m => {
-    html += `<div class="metric-row"><span class="metric-label">${m.label}</span><input class="metric-input" placeholder="${m.placeholder}"><input class="metric-input" placeholder="Their answer..."></div>`;
+    html += `<div class="metric-row" style="grid-template-columns:110px 1fr;"><span class="metric-label">${m.label}</span><input class="metric-input" placeholder="${m.placeholder}"></div>`;
   });
   document.getElementById('metricsSection').innerHTML = html;
 }
@@ -1667,7 +1667,7 @@ function buildSummary() {
   let mhtml = '<div class="summary-section"><h4>Metrics</h4>';
   inputs.forEach(row => {
     const label = row.querySelector('.metric-label')?.textContent;
-    const val = row.querySelectorAll('.metric-input')[1]?.value;
+    const val = row.querySelector('.metric-input')?.value;
     if (val) { hasMetrics = true; mhtml += `<div style="padding:3px 0; font-size:13px"><strong>${label}:</strong> ${val}</div>`; }
   });
   mhtml += '</div>';
@@ -1718,7 +1718,7 @@ function exportNotes() {
   let hasM = false; let mt = 'METRICS:\n';
   inputs.forEach(row => {
     const label = row.querySelector('.metric-label')?.textContent;
-    const val = row.querySelectorAll('.metric-input')[1]?.value;
+    const val = row.querySelector('.metric-input')?.value;
     if (val) { hasM=true; mt += `  ${label}: ${val}\n`; }
   });
   if (hasM) out += mt + '\n';
@@ -1870,7 +1870,7 @@ exportNotes = function() {
   let hasM = false; let mt = 'METRICS:\n';
   inputs.forEach(row => {
     const label = row.querySelector('.metric-label')?.textContent;
-    const val = row.querySelectorAll('.metric-input')[1]?.value;
+    const val = row.querySelector('.metric-input')?.value;
     if (val) { hasM=true; mt += `  ${label}: ${val}\n`; }
   });
   if (hasM) out += mt + '\n';
