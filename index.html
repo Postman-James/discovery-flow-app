@@ -549,6 +549,16 @@
         </div>
         <h3 style="margin-top:14px">Notes</h3>
         <textarea class="notes-area" id="notes-pattern" placeholder="Collaboration pattern notes, key quotes..."></textarea>
+
+        <hr class="section-divider">
+        <h3>Select Discovery Lens(es) to Explore in Deep Dive</h3>
+        <p style="margin-bottom:10px; color:var(--text-light); font-size:12px">Based on what you heard in the broad questions, which areas should you drill into? Select all that apply.</p>
+        <div class="chaos-selector" id="lensSelector">
+          <div class="chaos-card selected" onclick="toggleLens(this,'testing')" data-lens="testing"><div class="chaos-icon">🧪</div><h4>Test Automation</h4><p>Where do tests live? Are they automated? What's blocking more automation?</p></div>
+          <div class="chaos-card selected" onclick="toggleLens(this,'governance')" data-lens="governance"><div class="chaos-icon">📏</div><h4>Governance</h4><p>Are standards or reviews in place? What's inconsistent or slowing adoption?</p></div>
+          <div class="chaos-card selected" onclick="toggleLens(this,'security')" data-lens="security"><div class="chaos-icon">🔒</div><h4>Security</h4><p>What problem are they trying to solve? What's their current state?</p></div>
+          <div class="chaos-card selected" onclick="toggleLens(this,'monitoring')" data-lens="monitoring"><div class="chaos-icon">📊</div><h4>Monitoring</h4><p>Where does visibility end? How fast do they detect failures?</p></div>
+        </div>
       </div>
     </div>
     <div style="display:flex; justify-content:space-between; margin-top:14px"><button class="btn btn-back" onclick="prevPhase()">Back</button><button class="btn btn-orange" onclick="nextPhase()">Next: Deep Dive</button></div>
@@ -1169,7 +1179,7 @@ const PERSONAS = {
         {text: '"Version control tied to partner contracts" / "API bulletin" → External lifecycle (Partner)', good: true},
         {text: '"Each team does it differently" → Hybrid', good: true}
       ]},
-      {title: 'Test Automation: App-Specific APIs', fit: 'Collections + CLI + Monitors', patterns: ['single','crossteam'], questions: [
+      {title: 'Test Automation: App-Specific APIs', fit: 'Collections + CLI + Monitors', lens: 'testing', patterns: ['single','crossteam'], questions: [
         '"How do you validate new endpoints before merging code?"',
         '"Do you automate happy-path and error scenarios?"',
         '"Are your tests part of the CI/CD pipeline or run manually?"',
@@ -1179,7 +1189,7 @@ const PERSONAS = {
         {text: '"QA waits on dev before testing"', good: true},
         {text: '"Tests are in CI/CD, automated"', good: false}
       ]},
-      {title: 'Test Automation: Reusable/Shared APIs', fit: 'Contract Tests + Shared Collections', patterns: ['crossteam','platformwide','partner'], questions: [
+      {title: 'Test Automation: Reusable/Shared APIs', fit: 'Contract Tests + Shared Collections', lens: 'testing', patterns: ['crossteam','platformwide','partner'], questions: [
         '"Do multiple teams consume this API?"',
         '"How do you prevent breaking changes across consumers?"',
         '"Are contract or schema checks part of your release process?"',
@@ -1189,7 +1199,7 @@ const PERSONAS = {
         {text: '"Consumers complain after changes"', good: true},
         {text: '"Contract checks gate every release"', good: false}
       ]},
-      {title: 'Governance: App-Specific APIs', fit: 'Workspace Rules + CI/CD Validation', patterns: ['single','crossteam'], questions: [
+      {title: 'Governance: App-Specific APIs', fit: 'Workspace Rules + CI/CD Validation', lens: 'governance', patterns: ['single','crossteam'], questions: [
         '"Who owns governance checks -- the developer or platform team?"',
         '"How do you catch inconsistent error handling or missing fields early?"',
         '"Are specs created before or after implementation?"',
@@ -1199,7 +1209,7 @@ const PERSONAS = {
         {text: '"Different teams follow different standards"', good: true},
         {text: '"Comprehensive ruleset-driven governance"', good: false}
       ]},
-      {title: 'Governance: Reusable/Shared APIs', fit: 'SpecHub + Spectral + CI/CD', patterns: ['crossteam','platformwide'], questions: [
+      {title: 'Governance: Reusable/Shared APIs', fit: 'SpecHub + Spectral + CI/CD', lens: 'governance', patterns: ['crossteam','platformwide'], questions: [
         '"Do multiple teams consume this API?"',
         '"How do you prevent breaking changes across consumers?"',
         '"Are contract or schema checks part of your release process?"',
@@ -1209,7 +1219,7 @@ const PERSONAS = {
         {text: '"Breaking changes slip through"', good: true},
         {text: '"Continuous validation in CI/CD"', good: false}
       ]},
-      {title: 'Governance: Partner/External APIs', fit: 'Partner Workspaces + Change Mgmt', patterns: ['partner'], questions: [
+      {title: 'Governance: Partner/External APIs', fit: 'Partner Workspaces + Change Mgmt', lens: 'governance', patterns: ['partner'], questions: [
         '"How do you manage API changes with partners?"',
         '"Do you expose specs externally or manage via gated access?"',
         '"Are security and rate-limit policies standardized across APIs?"',
@@ -1219,7 +1229,7 @@ const PERSONAS = {
         {text: '"No gated access to specs"', good: true},
         {text: '"Managed partner lifecycle"', good: false}
       ]},
-      {title: 'Security: Current State', fit: 'Vault + Secret Scanner + SSO', patterns: ['single','crossteam','platformwide','partner'], questions: [
+      {title: 'Security: Current State', fit: 'Vault + Secret Scanner + SSO', lens: 'security', patterns: ['single','crossteam','platformwide','partner'], questions: [
         '"What\'s driving your focus on API security right now?"',
         '"Can you share a recent example that triggered this focus?"',
         '"What is your primary security concern right now?"',
@@ -1234,7 +1244,7 @@ const PERSONAS = {
         {text: '"No clear API security ownership"', good: true},
         {text: '"Strong security posture already"', good: false}
       ]},
-      {title: 'Monitoring: App-Specific APIs', fit: 'Monitors + Regression Alerts', patterns: ['single','crossteam'], questions: [
+      {title: 'Monitoring: App-Specific APIs', fit: 'Monitors + Regression Alerts', lens: 'monitoring', patterns: ['single','crossteam'], questions: [
         '"Do you run monitors today or rely on CI test results?"',
         '"How quickly do you detect API issues before customers do?"',
         '"Are you tracking uptime trends or only failures?"',
@@ -1244,7 +1254,7 @@ const PERSONAS = {
         {text: '"Monitor infrastructure, not APIs"', good: true},
         {text: '"Comprehensive uptime monitoring"', good: false}
       ]},
-      {title: 'Monitoring: Shared APIs', fit: 'Monitors + Insights Multi-Env', patterns: ['crossteam','platformwide'], questions: [
+      {title: 'Monitoring: Shared APIs', fit: 'Monitors + Insights Multi-Env', lens: 'monitoring', patterns: ['crossteam','platformwide'], questions: [
         '"How do you monitor shared services across environments?"',
         '"Do you capture latency and error trends over time?"',
         '"Can you trace failures back to specific endpoints or contracts?"',
@@ -1254,7 +1264,7 @@ const PERSONAS = {
         {text: '"No cross-environment monitoring"', good: true},
         {text: '"Full dependency and latency monitoring"', good: false}
       ]},
-      {title: 'Monitoring: Partner/External APIs', fit: 'Insights + Repro Mode', patterns: ['partner'], questions: [
+      {title: 'Monitoring: Partner/External APIs', fit: 'Insights + Repro Mode', lens: 'monitoring', patterns: ['partner'], questions: [
         '"How do you detect issues impacting external users?"',
         '"Can you reproduce failing API calls with real data?"',
         '"Do product teams have visibility into API performance and errors?"',
@@ -1472,7 +1482,8 @@ function injectDeepDive(p) {
   let html = '';
   p.deepDiveQuestions.forEach(section => {
     const patternAttr = section.patterns ? ` data-patterns="${section.patterns.join(',')}"` : '';
-    html += `<div class="card tiger-deep-card"${patternAttr}><div class="card-header"><h2>${p.icon} ${section.title}</h2><span class="postman-fit">${section.fit}</span></div>`;
+    const lensAttr = section.lens ? ` data-lens="${section.lens}"` : '';
+    html += `<div class="card tiger-deep-card"${patternAttr}${lensAttr}><div class="card-header"><h2>${p.icon} ${section.title}</h2><span class="postman-fit">${section.fit}</span></div>`;
     section.questions.forEach((q, i) => {
       if (i === 0) {
         html += `<div class="star-question" onclick="toggleStar(this)"><strong>${q}</strong><div class="star-response"><input type="text" placeholder="Their response..." onclick="event.stopPropagation()"></div></div>`;
@@ -1686,6 +1697,12 @@ function togglePattern(el, type) {
   selectedPatterns.has(type) ? selectedPatterns.delete(type) : selectedPatterns.add(type);
 }
 
+let selectedLenses = new Set(['testing','governance','security','monitoring']); // all on by default
+function toggleLens(el, lens) {
+  el.classList.toggle('selected');
+  selectedLenses.has(lens) ? selectedLenses.delete(lens) : selectedLenses.add(lens);
+}
+
 function tagPattern(el) {
   el.classList.toggle('selected');
   recalcPatternScores();
@@ -1756,11 +1773,20 @@ function copyText(el) {
 
 function updateDeepDiveVisibility() {
   if (currentPersona === 'tiger') {
-    // Filter tiger deep dive cards by selected collaboration patterns
-    document.querySelectorAll('.tiger-deep-card[data-patterns]').forEach(card => {
-      const cardPatterns = card.dataset.patterns.split(',');
-      const match = selectedPatterns.size === 0 || cardPatterns.some(p => selectedPatterns.has(p));
-      card.style.display = match ? 'block' : 'none';
+    // Filter tiger deep dive cards by collaboration patterns AND discovery lenses
+    document.querySelectorAll('.tiger-deep-card').forEach(card => {
+      // Check pattern match
+      let patternMatch = true;
+      if (card.dataset.patterns) {
+        const cardPatterns = card.dataset.patterns.split(',');
+        patternMatch = selectedPatterns.size === 0 || cardPatterns.some(p => selectedPatterns.has(p));
+      }
+      // Check lens match (cards without a lens, like collab questions, always show)
+      let lensMatch = true;
+      if (card.dataset.lens) {
+        lensMatch = selectedLenses.has(card.dataset.lens);
+      }
+      card.style.display = (patternMatch && lensMatch) ? 'block' : 'none';
     });
   } else {
     // Filter chaos-type cards for other personas
