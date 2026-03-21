@@ -555,80 +555,80 @@
         <p style="margin-bottom:10px; color:var(--text-light); font-size:12px">Ask these quick questions to decide which lenses to explore in Deep Dive. Click responses you hear, then select/deselect the lens cards below.</p>
 
         <div style="margin:14px 0;">
-          <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
             <span style="font-size:18px;">🧪</span>
             <h4 style="font-size:13px; color:var(--pm-dark);">Test Automation</h4>
           </div>
-          <ul class="follow-ups">
-            <li onclick="toggleAsked(this)">"How are you testing your APIs today -- manual, automated, or a mix?"</li>
-            <li onclick="toggleAsked(this)">"Are tests part of your CI/CD pipeline or run after merge?"</li>
-          </ul>
+          <div style="padding:7px 11px; background:#FAFAFA; border-radius:6px; font-size:13px; margin:3px 0;">"How are you testing your APIs today -- manual, automated, or a mix?"</div>
           <div class="response-tags">
             <span class="response-tag" onclick="tagLens(this)" data-lens="testing" data-strength="strong">"Mostly manual"</span>
-            <span class="response-tag" onclick="tagLens(this)" data-lens="testing" data-strength="strong">"Tests run after merge, not in CI"</span>
             <span class="response-tag" onclick="tagLens(this)" data-lens="testing" data-strength="moderate">"Mix of manual and automated"</span>
             <span class="response-tag" onclick="tagLens(this)" data-lens="testing" data-strength="moderate">"QA waits on dev before testing"</span>
-            <span class="response-tag" onclick="tagLens(this)" data-lens="testing" data-strength="weak">"Fully automated in CI/CD" (skip)</span>
+          </div>
+          <div style="padding:7px 11px; background:#FAFAFA; border-radius:6px; font-size:13px; margin:8px 0 3px;">"Are tests part of your CI/CD pipeline or run after merge?"</div>
+          <div class="response-tags">
+            <span class="response-tag" onclick="tagLens(this)" data-lens="testing" data-strength="strong">"Tests run after merge, not in CI"</span>
+            <span class="response-tag" onclick="tagLens(this)" data-lens="testing" data-strength="weak">"Fully automated in CI/CD" (weak)</span>
           </div>
         </div>
 
         <hr class="section-divider">
 
         <div style="margin:14px 0;">
-          <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
             <span style="font-size:18px;">📏</span>
             <h4 style="font-size:13px; color:var(--pm-dark);">Governance</h4>
           </div>
-          <ul class="follow-ups">
-            <li onclick="toggleAsked(this)">"Do you have consistent API standards across teams, or does each team do their own thing?"</li>
-            <li onclick="toggleAsked(this)">"Are specs created before or after implementation?"</li>
-          </ul>
+          <div style="padding:7px 11px; background:#FAFAFA; border-radius:6px; font-size:13px; margin:3px 0;">"Do you have consistent API standards across teams, or does each team do their own thing?"</div>
           <div class="response-tags">
             <span class="response-tag" onclick="tagLens(this)" data-lens="governance" data-strength="strong">"Each team does their own thing"</span>
             <span class="response-tag" onclick="tagLens(this)" data-lens="governance" data-strength="strong">"No formal standards"</span>
             <span class="response-tag" onclick="tagLens(this)" data-lens="governance" data-strength="moderate">"Standards exist but not enforced"</span>
+          </div>
+          <div style="padding:7px 11px; background:#FAFAFA; border-radius:6px; font-size:13px; margin:8px 0 3px;">"Are specs created before or after implementation?"</div>
+          <div class="response-tags">
             <span class="response-tag" onclick="tagLens(this)" data-lens="governance" data-strength="moderate">"Specs created after implementation"</span>
-            <span class="response-tag" onclick="tagLens(this)" data-lens="governance" data-strength="weak">"Consistent standards, enforced in CI" (skip)</span>
+            <span class="response-tag" onclick="tagLens(this)" data-lens="governance" data-strength="weak">"Consistent standards, enforced in CI" (weak)</span>
           </div>
         </div>
 
         <hr class="section-divider">
 
         <div style="margin:14px 0;">
-          <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
             <span style="font-size:18px;">🔒</span>
             <h4 style="font-size:13px; color:var(--pm-dark);">Security</h4>
           </div>
-          <ul class="follow-ups">
-            <li onclick="toggleAsked(this)">"What's driving your focus on API security right now?"</li>
-            <li onclick="toggleAsked(this)">"Who owns API security today -- dev team, security team, or both?"</li>
-          </ul>
+          <div style="padding:7px 11px; background:#FAFAFA; border-radius:6px; font-size:13px; margin:3px 0;">"What's driving your focus on API security right now?"</div>
           <div class="response-tags">
             <span class="response-tag" onclick="tagLens(this)" data-lens="security" data-strength="strong">"Recent incident or audit triggered this"</span>
             <span class="response-tag" onclick="tagLens(this)" data-lens="security" data-strength="strong">"Credentials shared in Slack or repos"</span>
-            <span class="response-tag" onclick="tagLens(this)" data-lens="security" data-strength="moderate">"No clear ownership of API security"</span>
             <span class="response-tag" onclick="tagLens(this)" data-lens="security" data-strength="moderate">"Compliance pressure (SOC2, PCI, HIPAA)"</span>
-            <span class="response-tag" onclick="tagLens(this)" data-lens="security" data-strength="weak">"Strong security posture already" (skip)</span>
+          </div>
+          <div style="padding:7px 11px; background:#FAFAFA; border-radius:6px; font-size:13px; margin:8px 0 3px;">"Who owns API security today -- dev team, security team, or both?"</div>
+          <div class="response-tags">
+            <span class="response-tag" onclick="tagLens(this)" data-lens="security" data-strength="moderate">"No clear ownership of API security"</span>
+            <span class="response-tag" onclick="tagLens(this)" data-lens="security" data-strength="weak">"Strong security posture already" (weak)</span>
           </div>
         </div>
 
         <hr class="section-divider">
 
         <div style="margin:14px 0;">
-          <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
             <span style="font-size:18px;">📊</span>
             <h4 style="font-size:13px; color:var(--pm-dark);">Monitoring</h4>
           </div>
-          <ul class="follow-ups">
-            <li onclick="toggleAsked(this)">"How do you monitor the health of your APIs?"</li>
-            <li onclick="toggleAsked(this)">"How quickly do you detect issues before customers do?"</li>
-          </ul>
+          <div style="padding:7px 11px; background:#FAFAFA; border-radius:6px; font-size:13px; margin:3px 0;">"How do you monitor the health of your APIs?"</div>
           <div class="response-tags">
             <span class="response-tag" onclick="tagLens(this)" data-lens="monitoring" data-strength="strong">"We find out when customers report it"</span>
             <span class="response-tag" onclick="tagLens(this)" data-lens="monitoring" data-strength="strong">"Monitor infrastructure, not APIs"</span>
             <span class="response-tag" onclick="tagLens(this)" data-lens="monitoring" data-strength="moderate">"Basic uptime pings only"</span>
+          </div>
+          <div style="padding:7px 11px; background:#FAFAFA; border-radius:6px; font-size:13px; margin:8px 0 3px;">"How quickly do you detect issues before customers do?"</div>
+          <div class="response-tags">
             <span class="response-tag" onclick="tagLens(this)" data-lens="monitoring" data-strength="moderate">"Can't trace failures to specific endpoints"</span>
-            <span class="response-tag" onclick="tagLens(this)" data-lens="monitoring" data-strength="weak">"Comprehensive API monitoring in place" (skip)</span>
+            <span class="response-tag" onclick="tagLens(this)" data-lens="monitoring" data-strength="weak">"Comprehensive API monitoring in place" (weak)</span>
           </div>
         </div>
 
