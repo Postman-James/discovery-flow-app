@@ -2098,6 +2098,42 @@ function buildDemoRecommendation() {
     });
   }
 
+  // Next Step Pitch - a ready-to-say blurb tying discovery back to demo
+  if (features.size > 0) {
+    // Build source summary (what they told us)
+    const allSources = new Set();
+    features.forEach(f => f.sources.forEach(s => allSources.add(s)));
+    const sourceList = [...allSources].map(s => s.replace('Pain: ', '').toLowerCase());
+
+    // Group features by section for the walkthrough
+    const sectionFeatures = [...features.entries()]
+      .filter(([,f]) => f.section)
+      .sort((a,b) => a[1].section - b[1].section);
+
+    // Deduplicate by section number (combine features in same section)
+    const bySection = new Map();
+    sectionFeatures.forEach(([name, f]) => {
+      if (!bySection.has(f.section)) bySection.set(f.section, {section: f.section, names: [name], sources: [...f.sources]});
+      else { bySection.get(f.section).names.push(name); f.sources.forEach(s => { if (!bySection.get(f.section).sources.includes(s)) bySection.get(f.section).sources.push(s); }); }
+    });
+
+    let pitch = '<h4 style="font-size:12px; color:var(--text-light); text-transform:uppercase; letter-spacing:0.5px; margin:14px 0 8px;">Next Step Pitch</h4>';
+    pitch += '<div onclick="copyText(this)" style="background:white; border:1px solid #FFE0D0; border-radius:8px; padding:14px; font-size:13px; line-height:1.6; cursor:pointer; position:relative;">';
+    pitch += '<span class="copy-hint">click to copy</span>';
+    pitch += `<p style="margin:0 0 10px 0;">"Based on what you shared around <strong>${sourceList.join(', ')}</strong>, I think the best next step would be a hands-on demo tailored to your environment. Here's what I'd walk you through:"</p>`;
+    pitch += '<ul style="margin:0; padding-left:18px;">';
+    bySection.forEach(s => {
+      const because = s.sources.map(src => src.toLowerCase()).join(' and ');
+      pitch += `<li style="margin-bottom:6px;"><strong>Section ${s.section}: ${s.names[0]}</strong>`;
+      if (s.names.length > 1) pitch += ` + ${s.names.slice(1).join(', ')}`;
+      pitch += ` &mdash; directly addresses what you described around ${because}.</li>`;
+    });
+    pitch += '</ul>';
+    pitch += `<p style="margin:10px 0 0 0;">"I can set this up for [next week / a time that works for your team]. I'd keep it focused, around 30-45 minutes, and we can go deep on whichever part matters most to you."</p>`;
+    pitch += '</div>';
+    html += pitch;
+  }
+
   html += '</div>';
   return html;
 }
@@ -2154,6 +2190,24 @@ function getDemoRecommendationText() {
     out += '\nOPENING TALK TRACKS:\n';
     talkTracks.forEach(t => out += `  ${t.chaos}: ${t.track}\n`);
   }
+
+  // Next Step Pitch (plain text)
+  const allSources = new Set();
+  features.forEach(f => f.sources.forEach(s => allSources.add(s)));
+  const sourceList = [...allSources].map(s => s.replace('Pain: ', '').toLowerCase());
+  const bySection = new Map();
+  [...features.entries()].filter(([,f]) => f.section).sort((a,b) => a[1].section - b[1].section).forEach(([name, f]) => {
+    if (!bySection.has(f.section)) bySection.set(f.section, {section: f.section, names: [name], sources: [...f.sources]});
+    else { bySection.get(f.section).names.push(name); f.sources.forEach(s => { if (!bySection.get(f.section).sources.includes(s)) bySection.get(f.section).sources.push(s); }); }
+  });
+  out += '\nNEXT STEP PITCH:\n';
+  out += `  "Based on what you shared around ${sourceList.join(', ')}, I think the best next step would be a hands-on demo tailored to your environment. Here's what I'd walk you through:"\n`;
+  bySection.forEach(s => {
+    const label = s.names.length > 1 ? `${s.names[0]} + ${s.names.slice(1).join(', ')}` : s.names[0];
+    out += `  - Section ${s.section}: ${label} -- directly addresses what you described around ${s.sources.map(src => src.toLowerCase()).join(' and ')}.\n`;
+  });
+  out += `  "I can set this up for [next week / a time that works for your team]. I'd keep it focused, around 30-45 minutes, and we can go deep on whichever part matters most to you."\n`;
+
   out += '\n';
   return out;
 }
