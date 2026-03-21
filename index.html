@@ -1649,6 +1649,239 @@ function updateDeepDiveVisibility() {
   }
 }
 
+// ===== DEMO RECOMMENDATION ENGINE =====
+const DEMO_MAP = {
+  chaos: {
+    discovery: {
+      label: 'Discovery / Reuse',
+      icon: '🔍',
+      features: [
+        {name: 'Private API Network', desc: 'Central searchable catalog. Fork collections in clicks. Show: search, browse, fork into workspace.', section: 1},
+        {name: 'API Catalog', desc: 'Org-wide visibility into services, ownership, health, dependencies.', section: 12},
+        {name: 'Workspaces', desc: 'Organized by team/service. Published to PAN for discoverability.', section: 3},
+        {name: 'Fork & Reuse', desc: 'Fork from PAN, always current. No more exporting JSON files.', section: 1}
+      ],
+      talkTrack: '"You mentioned teams can\'t find existing APIs and end up rebuilding. Let me show you how the Private API Network gives every developer a searchable catalog they can fork from in seconds."'
+    },
+    execution: {
+      label: 'Execution / Quality',
+      icon: '⚡',
+      features: [
+        {name: 'Mock Servers', desc: 'Parallel dev/test. FE doesn\'t wait for BE. Dynamic responses with Faker.', section: 2},
+        {name: 'Collection Runner + CI/CD', desc: 'Chain requests, pass variables. Same tests locally and in pipeline.', section: 7},
+        {name: 'Performance Testing', desc: 'Load test with concurrent users. Spike vs ramp-up. Identify bottlenecks early.', section: 8},
+        {name: 'Monitors', desc: 'Scheduled health checks. Slack/email alerts. SLA monitoring.', section: 9},
+        {name: 'Insights', desc: 'Runtime API health, error rates, latency trends next to specs and tests.', section: 12}
+      ],
+      talkTrack: '"You mentioned breaking changes making it to prod and ownership being unclear. Let me show you how Postman catches issues earlier -- from mock servers for parallel work to monitors that alert your team before customers notice."'
+    },
+    agent: {
+      label: 'Agent / Tool',
+      icon: '🤖',
+      features: [
+        {name: 'Agent Mode', desc: 'AI generates tests, docs, specs from your API. Context-aware, not generic.', section: 4},
+        {name: 'AI Documentation', desc: 'Auto-generate detailed docs from endpoint structure and response.', section: 5},
+        {name: 'Local Git + Filesystem', desc: 'Work in IDE/Cursor with trusted API context underneath. MCP connectivity.', section: 11},
+        {name: 'AI Test Generation', desc: 'Feed Jira/Confluence requirements, agent builds complex test scenarios.', section: 4}
+      ],
+      talkTrack: '"You mentioned wanting agents to consume APIs safely but not having a trusted layer underneath. Let me show you Agent Mode -- it reads your actual API structure to generate tests and docs, and with local Git you keep everything in your developer\'s preferred tools."'
+    },
+    fragmentation: {
+      label: 'Workflow Fragmentation',
+      icon: '🔀',
+      features: [
+        {name: 'Local Git Integration', desc: 'Specs, collections, tests live alongside code. 1:1 file system mapping.', section: 11},
+        {name: 'Pull Requests', desc: 'QA to engineering PRs with diff view. Approve and merge like Git.', section: 6},
+        {name: 'CLI in CI/CD', desc: 'Contract validation as a gate before merge. Same tests in pipeline as local.', section: 7},
+        {name: 'API Catalog', desc: 'Single source of truth. Specs, health, CI/CD activity, ownership in one place.', section: 12},
+        {name: 'Governance Rules', desc: 'SpecHub + Spectral rules enforce naming, structure, versioning standards.', section: null}
+      ],
+      talkTrack: '"You mentioned specs drifting from code and nobody seeing everything together. Let me show you how Postman\'s Git integration keeps specs, tests, and collections alongside your code, and the API Catalog gives you one place to see truth across all services."'
+    }
+  },
+  pattern: {
+    single: {
+      label: 'Single Team',
+      features: [
+        {name: 'Mock Servers', desc: 'Parallel dev within the squad. Don\'t wait on backend.', section: 2},
+        {name: 'Collection Runner', desc: 'Automate functional and smoke tests in CI/CD.', section: 7},
+        {name: 'Agent Mode', desc: 'Generate tests and docs from existing endpoints.', section: 4}
+      ]
+    },
+    crossteam: {
+      label: 'Cross-Team',
+      features: [
+        {name: 'Private API Network', desc: 'Discover and fork APIs across teams.', section: 1},
+        {name: 'Workspaces + RBAC', desc: 'Shared spaces with role-based access.', section: 3},
+        {name: 'Pull Requests', desc: 'Cross-team review and merge workflow.', section: 6},
+        {name: 'Monitors', desc: 'Shared service health visibility.', section: 9}
+      ]
+    },
+    platformwide: {
+      label: 'Platform-Wide',
+      features: [
+        {name: 'API Catalog', desc: 'Org-wide service visibility, dependencies, health.', section: 12},
+        {name: 'Governance Rules', desc: 'Enforce standards across all teams via Spectral.', section: null},
+        {name: 'CLI in CI/CD', desc: 'Contract validation gates for every PR.', section: 7},
+        {name: 'Private API Network', desc: 'Curated catalog of production-ready APIs.', section: 1},
+        {name: 'Insights', desc: 'Cross-environment monitoring and latency trends.', section: 12}
+      ]
+    },
+    partner: {
+      label: 'Partner / Project',
+      features: [
+        {name: 'Partner Workspaces', desc: 'Controlled access for external collaborators.', section: 3},
+        {name: 'Vault + Secret Scanner', desc: 'Secure credential management for external APIs.', section: 10},
+        {name: 'Mock Servers', desc: 'Let partners test against simulated endpoints.', section: 2},
+        {name: 'Monitors', desc: 'SLA monitoring for partner-facing APIs.', section: 9}
+      ]
+    }
+  },
+  // Pain keyword detection for additional recommendations
+  painKeywords: {
+    'secret': {name: 'Vault + Secret Scanner', desc: 'Local vault, external vault integrations, 186 scan patterns.', section: 10},
+    'credential': {name: 'Vault + Secret Scanner', desc: 'Local vault, external vault integrations, 186 scan patterns.', section: 10},
+    'security': {name: 'Vault + Secret Scanner + Workspace Security', desc: 'SSO, RBAC, secret scanning, audit trails.', section: 10},
+    'compliance': {name: 'Monitors + Reporting', desc: 'Timestamped test results for audit evidence.', section: 9},
+    'audit': {name: 'Monitors + Reporting', desc: 'Exportable test history for compliance evidence.', section: 9},
+    'performance': {name: 'Performance Testing', desc: 'Load test with concurrent users before release.', section: 8},
+    'slow': {name: 'Performance Testing + Monitors', desc: 'Identify bottlenecks and track latency trends.', section: 8},
+    'onboarding': {name: 'Private API Network', desc: 'New devs fork from catalog, start in minutes not weeks.', section: 1},
+    'duplicate': {name: 'Private API Network + API Catalog', desc: 'Central catalog eliminates redundant collections.', section: 1}
+  }
+};
+
+function buildDemoRecommendation() {
+  const features = new Map(); // name -> {desc, section, source}
+  let talkTracks = [];
+
+  if (currentPersona === 'tiger') {
+    // Map from collaboration patterns
+    selectedPatterns.forEach(pattern => {
+      const mapping = DEMO_MAP.pattern[pattern];
+      if (mapping) {
+        mapping.features.forEach(f => {
+          if (!features.has(f.name)) features.set(f.name, {...f, sources: [mapping.label]});
+          else features.get(f.name).sources.push(mapping.label);
+        });
+      }
+    });
+  } else {
+    // Map from chaos types
+    selectedChaos.forEach(chaos => {
+      const mapping = DEMO_MAP.chaos[chaos];
+      if (mapping) {
+        mapping.features.forEach(f => {
+          if (!features.has(f.name)) features.set(f.name, {...f, sources: [mapping.label]});
+          else features.get(f.name).sources.push(mapping.label);
+        });
+        if (mapping.talkTrack) talkTracks.push({chaos: mapping.label, track: mapping.talkTrack});
+      }
+    });
+  }
+
+  // Scan pain blocks for keyword matches
+  document.querySelectorAll('.pain-block .pain-input').forEach(input => {
+    const val = (input.value || '').toLowerCase();
+    Object.entries(DEMO_MAP.painKeywords).forEach(([keyword, feature]) => {
+      if (val.includes(keyword) && !features.has(feature.name)) {
+        features.set(feature.name, {...feature, sources: ['Pain: "' + keyword + '"']});
+      }
+    });
+  });
+
+  if (features.size === 0) return '';
+
+  let html = '<div class="summary-section" style="background:#FFF8F5; border:2px solid var(--pm-orange); border-radius:12px; padding:16px; margin:12px 0;">';
+  html += '<h4 style="color:var(--pm-orange); margin-bottom:10px;">Recommended Demo</h4>';
+
+  // Features table
+  html += '<div style="margin-bottom:12px;">';
+  features.forEach((f, name) => {
+    const sectionTag = f.section ? `<span style="background:var(--pm-dark); color:white; padding:2px 6px; border-radius:4px; font-size:10px; font-weight:600; margin-right:6px;">Section ${f.section}</span>` : '';
+    html += `<div style="padding:8px 0; border-bottom:1px solid #FFE0D0; font-size:13px;">`;
+    html += `${sectionTag}<strong>${name}</strong>`;
+    html += `<div style="color:var(--text-light); font-size:12px; margin-top:2px;">${f.desc}</div>`;
+    html += `<div style="font-size:10px; color:var(--pm-orange); margin-top:2px;">Because: ${f.sources.join(', ')}</div>`;
+    html += '</div>';
+  });
+  html += '</div>';
+
+  // Suggested demo order
+  const sections = [...features.values()].filter(f => f.section).map(f => f.section);
+  const uniqueSections = [...new Set(sections)].sort((a,b) => a-b);
+  if (uniqueSections.length > 0) {
+    html += `<div style="font-size:12px; margin-bottom:10px;"><strong>Suggested demo order:</strong> Sections ${uniqueSections.join(' → ')}</div>`;
+  }
+
+  // Talk tracks
+  if (talkTracks.length > 0) {
+    html += '<h4 style="font-size:12px; color:var(--text-light); text-transform:uppercase; letter-spacing:0.5px; margin:10px 0 6px;">Opening Talk Tracks</h4>';
+    talkTracks.forEach(t => {
+      html += `<div class="talk-track" onclick="copyText(this)" style="font-size:12px;"><strong>${t.chaos}:</strong> ${t.track}<span class="copy-hint">click to copy</span></div>`;
+    });
+  }
+
+  html += '</div>';
+  return html;
+}
+
+function getDemoRecommendationText() {
+  const features = new Map();
+  let talkTracks = [];
+
+  if (currentPersona === 'tiger') {
+    selectedPatterns.forEach(pattern => {
+      const mapping = DEMO_MAP.pattern[pattern];
+      if (mapping) mapping.features.forEach(f => {
+        if (!features.has(f.name)) features.set(f.name, {...f, sources: [mapping.label]});
+        else features.get(f.name).sources.push(mapping.label);
+      });
+    });
+  } else {
+    selectedChaos.forEach(chaos => {
+      const mapping = DEMO_MAP.chaos[chaos];
+      if (mapping) {
+        mapping.features.forEach(f => {
+          if (!features.has(f.name)) features.set(f.name, {...f, sources: [mapping.label]});
+          else features.get(f.name).sources.push(mapping.label);
+        });
+        if (mapping.talkTrack) talkTracks.push({chaos: mapping.label, track: mapping.talkTrack});
+      }
+    });
+  }
+
+  document.querySelectorAll('.pain-block .pain-input').forEach(input => {
+    const val = (input.value || '').toLowerCase();
+    Object.entries(DEMO_MAP.painKeywords).forEach(([keyword, feature]) => {
+      if (val.includes(keyword) && !features.has(feature.name)) {
+        features.set(feature.name, {...feature, sources: ['Pain: "' + keyword + '"']});
+      }
+    });
+  });
+
+  if (features.size === 0) return '';
+
+  let out = 'RECOMMENDED DEMO:\n';
+  features.forEach((f, name) => {
+    const sec = f.section ? `[Section ${f.section}] ` : '';
+    out += `  ${sec}${name} - ${f.desc} (Because: ${f.sources.join(', ')})\n`;
+  });
+
+  const sections = [...features.values()].filter(f => f.section).map(f => f.section);
+  const uniqueSections = [...new Set(sections)].sort((a,b) => a-b);
+  if (uniqueSections.length > 0) {
+    out += `  Suggested order: Sections ${uniqueSections.join(' → ')}\n`;
+  }
+
+  if (talkTracks.length > 0) {
+    out += '\nOPENING TALK TRACKS:\n';
+    talkTracks.forEach(t => out += `  ${t.chaos}: ${t.track}\n`);
+  }
+  out += '\n';
+  return out;
+}
+
 // ===== SUMMARY =====
 function buildSummary() {
   const p = PERSONAS[currentPersona];
@@ -1676,6 +1909,9 @@ function buildSummary() {
     signals.forEach(s => html += `<div style="padding:3px 0; font-size:13px">${s.classList.contains('signal-good')?'✅':'⚠️'} ${s.textContent}</div>`);
     html += '</div>';
   }
+
+  // Demo Recommendation
+  html += buildDemoRecommendation();
 
   // Metrics
   const inputs = document.querySelectorAll('#metricsSection .metric-row');
@@ -1874,6 +2110,9 @@ exportNotes = function() {
     });
     out += '\n';
   }
+
+  // Demo Recommendation
+  out += getDemoRecommendationText();
 
   // Pains
   const pains = collectPains();
