@@ -1802,7 +1802,7 @@ function tagLens(el) {
 
 function recalcLensScores() {
   lensTagCounts = {testing: {strong:0, moderate:0, weak:0}, governance: {strong:0, moderate:0, weak:0}, security: {strong:0, moderate:0, weak:0}, monitoring: {strong:0, moderate:0, weak:0}};
-  document.querySelectorAll('#tigerPatternSection .response-tags .response-tag.selected[data-lens]').forEach(tag => {
+  document.querySelectorAll('#tigerPatternSection .response-tag.selected[data-lens]').forEach(tag => {
     const lens = tag.dataset.lens;
     const strength = tag.dataset.strength || 'moderate';
     if (lensTagCounts[lens]) lensTagCounts[lens][strength]++;
@@ -1812,7 +1812,9 @@ function recalcLensScores() {
   ['testing','governance','security','monitoring'].forEach(lens => {
     const counts = lensTagCounts[lens];
     const hint = document.getElementById('lensHint-' + lens);
-    const card = document.querySelector(`#lensSelector .chaos-card[data-lens="${lens}"]`);
+    const cards = document.querySelectorAll('#lensSelector .chaos-card');
+    let card = null;
+    cards.forEach(c => { if (c.dataset.lens === lens) card = c; });
     if (!hint || !card) return;
 
     const total = counts.strong + counts.moderate + counts.weak;
