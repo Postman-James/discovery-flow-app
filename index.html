@@ -198,14 +198,66 @@
 
 <div class="container">
 
-<!-- PERSONA SELECTOR -->
-<div class="persona-select active" id="personaSelect">
+<!-- APPROACH SELECTOR (Step 1) -->
+<div class="persona-select active" id="approachSelect">
+  <div class="card" style="text-align:center; border:none; background:transparent; box-shadow:none;">
+    <h2 style="font-size:22px; margin-bottom:4px;">Choose Your Discovery Approach</h2>
+    <p style="color:var(--text-light); font-size:14px;">Two frameworks, pick the one that fits your call.</p>
+  </div>
+
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin:24px 0; max-width:800px; margin-left:auto; margin-right:auto;">
+    <div class="persona-option" onclick="showPersonaCards()" style="padding:30px;">
+      <div class="icon">🎯</div>
+      <h3>Persona-Based Discovery</h3>
+      <p>Liz Fedak's Technical Discovery Framework. Identify chaos types, use persona-specific questions and signals.</p>
+      <div class="persona-detail">
+        <h4>Best When</h4>
+        <ul>
+          <li>You know the buyer persona going in</li>
+          <li>Platform Eng, Product Eng, or QA audience</li>
+          <li>Want chaos-type identification + signals</li>
+          <li>Need persona-specific objection handling</li>
+        </ul>
+        <h4>Framework</h4>
+        <ul>
+          <li>4 Chaos Types (Discovery, Execution, Agent, Fragmentation)</li>
+          <li>13 anchor questions with buy/caution signals</li>
+          <li>MEDDPICC mapping</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="persona-option" onclick="selectPersona('tiger')" style="padding:30px;">
+      <div class="icon">🐯</div>
+      <h3>End-to-End Discovery</h3>
+      <p>Nga Pham's Tiger Team framework. Pattern-based discovery across collaboration, testing, governance, security, monitoring.</p>
+      <div class="persona-detail">
+        <h4>Best When</h4>
+        <ul>
+          <li>You don't know the persona yet</li>
+          <li>Mixed audience or first call</li>
+          <li>Want collaboration pattern identification</li>
+          <li>Need API-type-specific questions</li>
+        </ul>
+        <h4>Framework</h4>
+        <ul>
+          <li>4 Collaboration Patterns (Single, Cross-Team, Platform, Partner)</li>
+          <li>5 discovery lenses with answer-to-pattern mapping</li>
+          <li>API Maturity Assessment + content mapping</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PERSONA SELECTOR (Step 2, shown after choosing Persona-Based) -->
+<div class="persona-select" id="personaSelect">
   <div class="card" style="text-align:center; border:none; background:transparent; box-shadow:none;">
     <h2 style="font-size:22px; margin-bottom:4px;">Who are you meeting with?</h2>
     <p style="color:var(--text-light); font-size:14px;">Select the buyer persona to load the right discovery flow.</p>
   </div>
 
-  <div class="persona-grid">
+  <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin:24px 0;">
     <div class="persona-option" onclick="selectPersona('platform')">
       <div class="icon">🏗️</div>
       <h3>Platform Engineering</h3>
@@ -274,29 +326,10 @@
         </ul>
       </div>
     </div>
+  </div>
 
-    <div class="persona-option" onclick="selectPersona('tiger')">
-      <div class="icon">🐯</div>
-      <h3>Tiger Team Workflow</h3>
-      <p>Nga Pham's End-to-End Discovery & Pitch framework. Pattern-based discovery across collaboration, testing, governance, security, monitoring.</p>
-      <div class="persona-detail">
-        <h4>Discovery Lenses</h4>
-        <ul>
-          <li>Collaboration patterns (4 types)</li>
-          <li>Test automation by API type</li>
-          <li>Governance by API type</li>
-          <li>Security discovery</li>
-          <li>Monitoring by API type</li>
-        </ul>
-        <h4>Unique Features</h4>
-        <ul>
-          <li>Answer-to-pattern mapping tables</li>
-          <li>API Maturity Assessment</li>
-          <li>Content mapping (pain to Postman)</li>
-          <li>AE/SE best practices</li>
-        </ul>
-      </div>
-    </div>
+  <div style="text-align:center; margin-top:8px;">
+    <button class="btn btn-back" onclick="showApproachSelect()">Back to approach selection</button>
   </div>
 </div>
 
@@ -1187,7 +1220,8 @@ function selectPersona(key) {
   badge.textContent = p.icon + ' ' + p.name;
   badge.classList.remove('hidden');
 
-  // Hide selector, show flow
+  // Hide both selectors, show flow
+  document.getElementById('approachSelect').classList.remove('active');
   document.getElementById('personaSelect').classList.remove('active');
   document.getElementById('mainFlow').classList.remove('hidden');
 
@@ -1237,9 +1271,19 @@ function selectPersona(key) {
 }
 
 function resetPersona() {
-  if (confirm('Switch persona? This will reset the flow.')) {
+  if (confirm('Switch approach? This will reset the flow.')) {
     location.reload();
   }
+}
+
+function showPersonaCards() {
+  document.getElementById('approachSelect').classList.remove('active');
+  document.getElementById('personaSelect').classList.add('active');
+}
+
+function showApproachSelect() {
+  document.getElementById('personaSelect').classList.remove('active');
+  document.getElementById('approachSelect').classList.add('active');
 }
 
 // Helper: generate a question item with inline response field
